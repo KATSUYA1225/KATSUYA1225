@@ -39,6 +39,46 @@ class SkillInfo(BaseModel):
     tags: list[str]
     capabilities: list[str]
     is_mandatory: bool
+    plan_required: str = "starter"
+    preview_text: str = ""
+    example_tasks: list[str] = Field(default_factory=list)
+    category: str = "general"
+
+
+class CompanyDNARequest(BaseModel):
+    company_name: str = ""
+    industry: str = ""
+    employee_count: str = ""
+    revenue_range: str = ""
+    target_customers: str = ""
+    competitors: str = ""
+    self_strengths: str = ""
+    challenges: str = ""
+    goal_3m: str = ""
+    goal_1y: str = ""
+    plan: str = "starter"
+
+
+class CompanyDNAResponse(BaseModel):
+    company_id: str
+    company_name: str
+    industry: str
+    employee_count: str
+    revenue_range: str
+    target_customers: str
+    competitors: str
+    self_strengths: str
+    challenges: str
+    goal_3m: str
+    goal_1y: str
+    plan: str
+    has_strength_report: bool
+    updated_at: str | None = None
+
+
+class StrengthAnalysisResponse(BaseModel):
+    company_id: str
+    strength_report: str
 
 
 class CompanyResponse(BaseModel):

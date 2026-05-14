@@ -6,6 +6,13 @@ description: "予算管理・P&L分析・キャッシュフロー予測・ユニ
 is_mandatory: false
 price_tier: standard
 monthly_price_jpy: 2980
+plan_required: growth
+category: finance
+preview_text: "財務分析・予算計画・資金繰りを担当。キャッシュフロー改善から投資判断まで、数字に基づいた経営判断をサポートします。"
+example_tasks:
+  - "来期の予算計画を作成してください"
+  - "資金繰りを改善する施策を提案してください"
+  - "収益性を高めるための費用削減策を分析してください"
 included_in_templates:
   - tech_startup
   - consulting

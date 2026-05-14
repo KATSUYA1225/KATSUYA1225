@@ -3,169 +3,450 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI企業OS</title>
+  <title>AI企業OS — Future Share Collective</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
-    /* Markdown styles */
-    .prose h1 { font-size:1.4rem; font-weight:700; margin:1rem 0 .5rem; color:#f1f5f9; }
-    .prose h2 { font-size:1.15rem; font-weight:600; margin:.9rem 0 .4rem; color:#a78bfa; }
-    .prose h3 { font-size:1rem; font-weight:600; margin:.75rem 0 .35rem; color:#c4b5fd; }
-    .prose p  { margin:.45rem 0; line-height:1.75; }
+    /* Markdown */
+    .prose h1 { font-size:1.3rem; font-weight:700; margin:1rem 0 .5rem; color:#f1f5f9; }
+    .prose h2 { font-size:1.1rem; font-weight:600; margin:.9rem 0 .4rem; color:#a78bfa; }
+    .prose h3 { font-size:.95rem; font-weight:600; margin:.75rem 0 .35rem; color:#c4b5fd; }
+    .prose p  { margin:.4rem 0; line-height:1.75; }
     .prose ul { list-style:disc; padding-left:1.4rem; margin:.4rem 0; }
     .prose ol { list-style:decimal; padding-left:1.4rem; margin:.4rem 0; }
     .prose li { margin:.2rem 0; }
-    .prose table { width:100%; border-collapse:collapse; margin:.75rem 0; font-size:.8rem; }
-    .prose th { background:#1e293b; padding:.45rem .6rem; text-align:left; border:1px solid #334155; font-weight:600; }
-    .prose td { padding:.4rem .6rem; border:1px solid #334155; }
+    .prose table { width:100%; border-collapse:collapse; margin:.6rem 0; font-size:.8rem; }
+    .prose th { background:#1e293b; padding:.4rem .6rem; text-align:left; border:1px solid #334155; font-weight:600; }
+    .prose td { padding:.35rem .6rem; border:1px solid #334155; }
     .prose tr:nth-child(even) td { background:#0f172a; }
     .prose code { background:#1e293b; padding:.1rem .3rem; border-radius:.25rem; font-size:.8rem; font-family:monospace; }
-    .prose pre  { background:#0f172a; padding:.9rem 1rem; border-radius:.5rem; overflow-x:auto; margin:.6rem 0; border:1px solid #1e293b; }
-    .prose pre code { background:none; padding:0; font-size:.8rem; }
+    .prose pre  { background:#0f172a; padding:.9rem 1rem; border-radius:.5rem; overflow-x:auto; margin:.5rem 0; border:1px solid #1e293b; }
+    .prose pre code { background:none; padding:0; }
     .prose strong { color:#e2e8f0; font-weight:600; }
     .prose em { color:#94a3b8; }
-    .prose blockquote { border-left:3px solid #7c3aed; padding-left:.9rem; color:#94a3b8; margin:.6rem 0; }
-    .prose hr { border-color:#1e293b; margin:1rem 0; }
+    .prose blockquote { border-left:3px solid #7c3aed; padding-left:.9rem; color:#94a3b8; margin:.5rem 0; }
+    .prose hr { border-color:#1e293b; margin:.8rem 0; }
 
-    @keyframes spin { to { transform:rotate(360deg); } }
+    @keyframes spin  { to { transform:rotate(360deg); } }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-    .animate-blink { animation:blink 1.2s ease-in-out infinite; }
+    .animate-blink     { animation:blink 1.2s ease-in-out infinite; }
     .animate-spin-slow { animation:spin 1.4s linear infinite; display:inline-block; }
 
-    .dept-card { transition:all .25s ease; }
-    .dept-card.done  { border-color:#059669 !important; }
-    .dept-card.error { border-color:#dc2626 !important; }
+    .dept-card.done    { border-color:#059669 !important; }
+    .dept-card.error   { border-color:#dc2626 !important; }
     .dept-card.running { border-color:#d97706 !important; }
+
+    .tab-btn {
+      padding:.6rem 1.2rem;
+      font-size:.8rem;
+      font-weight:600;
+      color:#94a3b8;
+      border-bottom:2px solid transparent;
+      transition:all .2s;
+      white-space:nowrap;
+    }
+    .tab-btn:hover  { color:#e2e8f0; }
+    .tab-btn.active { color:#a78bfa; border-bottom-color:#7c3aed; }
+
+    .skill-card {
+      transition:all .2s ease;
+      cursor:pointer;
+    }
+    .skill-card:hover { transform:translateY(-2px); border-color:#4338ca !important; }
+    .skill-card.locked { opacity:.55; }
+    .skill-card.locked:hover { transform:none; border-color:#334155 !important; }
+
+    .plan-badge-starter  { background:#064e3b; color:#34d399; border-color:#065f46; }
+    .plan-badge-growth   { background:#1e3a5f; color:#60a5fa; border-color:#1d4ed8; }
+    .plan-badge-business { background:#3b1f6e; color:#c084fc; border-color:#7c3aed; }
+    .plan-badge-enterprise { background:#451a03; color:#fbbf24; border-color:#b45309; }
+
+    input, textarea, select {
+      background:#1e293b;
+      border:1px solid #334155;
+      color:#f1f5f9;
+      border-radius:.75rem;
+      padding:.6rem 1rem;
+      width:100%;
+      font-size:.875rem;
+      transition:border-color .2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline:none;
+      border-color:#7c3aed;
+      box-shadow:0 0 0 1px rgba(124,58,237,.3);
+    }
+    select option { background:#1e293b; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
 
-  <!-- Header -->
-  <header class="sticky top-0 z-10 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur px-5 py-3.5">
-    <div class="max-w-3xl mx-auto flex items-center justify-between">
+  <!-- ══ Header ═══════════════════════════════════════════════ -->
+  <header class="sticky top-0 z-20 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur">
+    <div class="max-w-5xl mx-auto px-5 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="text-2xl">🏢</div>
+        <span class="text-2xl">🏢</span>
         <div>
-          <h1 class="text-base font-bold text-white leading-tight">AI企業OS</h1>
+          <h1 class="text-sm font-bold text-white leading-tight">AI企業OS</h1>
           <p class="text-xs text-slate-500 leading-tight">AI経営チームをサブスクで — Future Share Collective</p>
         </div>
       </div>
-      <span class="text-xs bg-violet-900/50 text-violet-300 border border-violet-800 px-2.5 py-1 rounded-full">CLIモード / Proプラン</span>
+      <div class="flex items-center gap-2">
+        <span id="dna-status-badge" class="hidden text-xs bg-emerald-900/50 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-full">✓ DNA登録済</span>
+        <span class="text-xs bg-violet-900/50 text-violet-300 border border-violet-800 px-2.5 py-1 rounded-full">CLIモード / Proプラン</span>
+      </div>
     </div>
   </header>
 
-  <main class="max-w-3xl mx-auto px-5 py-7 space-y-5">
+  <!-- ══ Tab Bar ═══════════════════════════════════════════════ -->
+  <div class="sticky top-[52px] z-10 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
+    <div class="max-w-5xl mx-auto px-5 flex gap-0 overflow-x-auto">
+      <button onclick="switchTab('dna')"     id="tab-dna"     class="tab-btn">🧬 企業DNA</button>
+      <button onclick="switchTab('skills')"  id="tab-skills"  class="tab-btn">🛒 スキルマーケット</button>
+      <button onclick="switchTab('execute')" id="tab-execute" class="tab-btn active">▶ 実行</button>
+    </div>
+  </div>
 
-    <!-- ── Input Card ─────────────────────────────────────── -->
-    <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
+  <main class="max-w-5xl mx-auto px-5 py-6">
 
-      <!-- Company select -->
-      <div>
-        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">企業を選択</label>
-        <select id="company-select"
-          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100
-                 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50">
-          <option value="">読み込み中...</option>
-        </select>
-        <p id="company-mission" class="text-xs text-slate-500 mt-1.5 min-h-[1rem]"></p>
-      </div>
+    <!-- ══════════════════════════════════════════════════════
+         TAB: 企業DNA
+    ══════════════════════════════════════════════════════════ -->
+    <div id="panel-dna" class="hidden space-y-5">
 
-      <!-- Task input -->
-      <div>
-        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">社長へのタスク</label>
-        <textarea id="task-input" rows="3"
-          placeholder="例: SNS戦略を立案し、売上向上につながる具体的な施策を3つ提案してください。"
-          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100
-                 placeholder-slate-600 focus:outline-none focus:border-violet-500 focus:ring-1
-                 focus:ring-violet-500/50 resize-none leading-relaxed"></textarea>
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-lg">🧬</span>
+          <h2 class="text-sm font-bold text-white">企業DNA登録</h2>
+          <span class="text-xs text-slate-500 ml-1">— 入力するほどAIの回答精度が上がります</span>
+        </div>
 
-        <!-- Example tasks -->
-        <div class="flex flex-wrap gap-1.5 mt-2">
-          <span class="text-xs text-slate-500">例:</span>
-          <button onclick="setTask(this)" data-task="SNS戦略を立案し、売上向上につながる具体的な施策を3つ提案してください。"
-            class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">
-            SNS戦略
-          </button>
-          <button onclick="setTask(this)" data-task="新規顧客獲得コストを下げるための施策を3つ立案してください。"
-            class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">
-            CAC削減
-          </button>
-          <button onclick="setTask(this)" data-task="来月の売上を20%向上させるための具体的なアクションプランを作成してください。"
-            class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">
-            売上20%UP
-          </button>
-          <button onclick="setTask(this)" data-task="競合他社との差別化ポイントを整理し、強みを活かしたブランド戦略を提案してください。"
-            class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">
-            ブランド戦略
+        <!-- 企業選択 -->
+        <div class="mb-5">
+          <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">対象企業</label>
+          <select id="dna-company-select" onchange="onDnaCompanyChange()" class="max-w-sm">
+            <option value="">読み込み中...</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+          <!-- Section: 基本情報 -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-semibold text-violet-400 uppercase tracking-wider border-b border-slate-800 pb-1.5">基本情報</h3>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">会社名</label>
+              <input id="dna-company-name" type="text" placeholder="例: 株式会社〇〇">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">業界 / 事業内容</label>
+              <input id="dna-industry" type="text" placeholder="例: SaaS・BtoB / 飲食店 / 建築設計">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">従業員数</label>
+                <select id="dna-employee-count">
+                  <option value="">選択...</option>
+                  <option>1〜5名</option>
+                  <option>6〜20名</option>
+                  <option>21〜50名</option>
+                  <option>51〜100名</option>
+                  <option>100名以上</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">年商規模</label>
+                <select id="dna-revenue-range">
+                  <option value="">選択...</option>
+                  <option>〜500万円</option>
+                  <option>500〜2,000万円</option>
+                  <option>2,000〜5,000万円</option>
+                  <option>5,000万〜1億円</option>
+                  <option>1億円以上</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: 市場情報 -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-semibold text-violet-400 uppercase tracking-wider border-b border-slate-800 pb-1.5">市場情報</h3>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">ターゲット顧客</label>
+              <textarea id="dna-target-customers" rows="2" placeholder="例: 30〜50代の中小企業経営者。従業員10〜50名規模のDXに悩む企業"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">主な競合他社</label>
+              <input id="dna-competitors" type="text" placeholder="例: A社、B社、C社（カンマ区切り）">
+            </div>
+          </div>
+
+          <!-- Section: 強み・課題 -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-semibold text-violet-400 uppercase tracking-wider border-b border-slate-800 pb-1.5">強み・課題</h3>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">強みだと思うこと（自己評価）</label>
+              <textarea id="dna-self-strengths" rows="2" placeholder="例: 職人レベルの技術力、顧客との長期関係、独自の世界観"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">現在一番困っていること</label>
+              <textarea id="dna-challenges" rows="2" placeholder="例: 新規顧客の獲得ができていない、SNSを活用できていない"></textarea>
+            </div>
+          </div>
+
+          <!-- Section: 目標 -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-semibold text-violet-400 uppercase tracking-wider border-b border-slate-800 pb-1.5">目標設定</h3>
+
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">3ヶ月の目標</label>
+              <input id="dna-goal-3m" type="text" placeholder="例: 月次売上を150万円に乗せる">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">1年の目標</label>
+              <input id="dna-goal-1y" type="text" placeholder="例: 年商5,000万円・スタッフ3名体制">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">利用プラン（スキル解放に反映）</label>
+              <select id="dna-plan">
+                <option value="starter">Starter — ¥9,800/月（必須スキルのみ）</option>
+                <option value="growth">Growth — ¥29,800/月（+ 業種汎用スキル）</option>
+                <option value="business" selected>Business — ¥59,800/月（+ 専門プロスキル）</option>
+                <option value="enterprise">Enterprise — 要相談（フルカスタム）</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save button -->
+        <div class="flex items-center justify-between mt-5 pt-4 border-t border-slate-800">
+          <p id="dna-save-msg" class="text-xs text-slate-500"></p>
+          <button onclick="saveDNA()"
+            class="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
+            💾 保存する
           </button>
         </div>
       </div>
 
-      <!-- Footer row -->
-      <div class="flex items-center justify-between pt-1">
-        <div class="text-xs text-slate-500">
-          参考API価格: <span class="text-slate-400">¥20〜40</span>  ／  実際の課金:
-          <span class="text-emerald-400 font-medium">¥0</span>（Proプラン）
+      <!-- Strength Analysis -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🔍</span>
+            <h2 class="text-sm font-bold text-white">強み発見 — AI分析</h2>
+          </div>
+          <button onclick="analyzeStrengths()" id="analyze-btn"
+            class="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 disabled:bg-slate-800 disabled:text-slate-600
+                   disabled:cursor-not-allowed text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors">
+            <span id="analyze-icon">⚡</span>
+            <span id="analyze-label">強みを分析する</span>
+          </button>
         </div>
-        <button id="run-btn" onclick="run()"
-          class="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 active:bg-violet-700
-                 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed
-                 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
-          <span id="btn-icon">▶</span>
-          <span id="btn-label">実行</span>
-        </button>
+        <p class="text-xs text-slate-500 mb-4">先に企業DNAを保存してから実行してください。業界トレンドと競合情報をもとに、本当の強みをAIが発見します。</p>
+        <div id="strength-report" class="prose text-slate-200 text-sm leading-relaxed hidden"></div>
+        <p id="strength-placeholder" class="text-xs text-slate-600 italic">まだ分析されていません</p>
       </div>
     </div>
 
-    <!-- ── Progress Card ──────────────────────────────────── -->
-    <div id="progress-card" class="bg-slate-900 rounded-2xl border border-slate-800 p-5 hidden">
-      <div class="flex items-center gap-2 mb-4">
-        <span id="progress-icon" class="text-base">⚡</span>
-        <h2 class="text-sm font-semibold text-slate-300" id="progress-title">進行状況</h2>
-        <div id="spinner" class="ml-auto text-violet-400 text-xs animate-spin-slow hidden">⟳</div>
+    <!-- ══════════════════════════════════════════════════════
+         TAB: スキルマーケット
+    ══════════════════════════════════════════════════════════ -->
+    <div id="panel-skills" class="hidden space-y-5">
+
+      <!-- Plan Selector -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+        <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">表示するプラン</h2>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="setMarketPlan('starter')"  id="mp-starter"  class="market-plan-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all">Starter ¥9,800</button>
+          <button onclick="setMarketPlan('growth')"   id="mp-growth"   class="market-plan-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all">Growth ¥29,800</button>
+          <button onclick="setMarketPlan('business')" id="mp-business" class="market-plan-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all active-plan">Business ¥59,800</button>
+          <button onclick="setMarketPlan('enterprise')" id="mp-enterprise" class="market-plan-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all">Enterprise</button>
+        </div>
       </div>
 
-      <p id="status-msg" class="text-xs text-violet-300 mb-4 min-h-[1rem]"></p>
+      <!-- Category Filter -->
+      <div class="flex flex-wrap gap-2">
+        <button onclick="filterCategory('all')" id="cat-all" class="cat-btn text-xs px-3 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 active-cat">すべて</button>
+        <button onclick="filterCategory('core')" id="cat-core" class="cat-btn text-xs px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-400">基盤</button>
+        <button onclick="filterCategory('marketing')" id="cat-marketing" class="cat-btn text-xs px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-400">マーケ</button>
+        <button onclick="filterCategory('sales')" id="cat-sales" class="cat-btn text-xs px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-400">営業</button>
+        <button onclick="filterCategory('finance')" id="cat-finance" class="cat-btn text-xs px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-400">財務</button>
+        <button onclick="filterCategory('creative')" id="cat-creative" class="cat-btn text-xs px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-400">クリエイティブ</button>
+        <button onclick="filterCategory('industry')" id="cat-industry" class="cat-btn text-xs px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-400">業界専門</button>
+        <button onclick="filterCategory('strategy')" id="cat-strategy" class="cat-btn text-xs px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-400">戦略</button>
+      </div>
 
-      <div id="dept-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
+      <!-- Skill Grid -->
+      <div id="skill-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
     </div>
 
-    <!-- ── Result Card ────────────────────────────────────── -->
-    <div id="result-card" class="bg-slate-900 rounded-2xl border border-slate-800 p-5 hidden">
-      <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
-        <h2 class="text-sm font-semibold text-slate-300 flex items-center gap-2">
-          <span>📋</span> 社長決裁
-        </h2>
-        <div id="cost-display" class="text-xs text-slate-500"></div>
+    <!-- ══════════════════════════════════════════════════════
+         TAB: 実行
+    ══════════════════════════════════════════════════════════ -->
+    <div id="panel-execute" class="space-y-5">
+
+      <!-- Input Card -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
+
+        <!-- Company select -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">企業を選択</label>
+          <select id="company-select" onchange="onCompanyChange()"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100
+                   focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50">
+            <option value="">読み込み中...</option>
+          </select>
+          <div class="flex items-center gap-3 mt-1.5">
+            <p id="company-mission" class="text-xs text-slate-500 flex-1"></p>
+            <span id="exec-dna-badge" class="hidden text-xs bg-emerald-900/40 text-emerald-400 border border-emerald-900 px-2 py-0.5 rounded-full">✓ DNA登録済</span>
+          </div>
+        </div>
+
+        <!-- Task input -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">社長へのタスク</label>
+          <textarea id="task-input" rows="3"
+            placeholder="例: SNS戦略を立案し、売上向上につながる具体的な施策を3つ提案してください。"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100
+                   placeholder-slate-600 focus:outline-none focus:border-violet-500 focus:ring-1
+                   focus:ring-violet-500/50 resize-none leading-relaxed"></textarea>
+
+          <div class="flex flex-wrap gap-1.5 mt-2">
+            <span class="text-xs text-slate-500">例:</span>
+            <button onclick="setTask(this)" data-task="SNS戦略を立案し、売上向上につながる具体的な施策を3つ提案してください。"
+              class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">SNS戦略</button>
+            <button onclick="setTask(this)" data-task="新規顧客獲得コストを下げるための施策を3つ立案してください。"
+              class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">CAC削減</button>
+            <button onclick="setTask(this)" data-task="来月の売上を20%向上させるための具体的なアクションプランを作成してください。"
+              class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">売上20%UP</button>
+            <button onclick="setTask(this)" data-task="競合他社との差別化ポイントを整理し、強みを活かしたブランド戦略を提案してください。"
+              class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">ブランド戦略</button>
+            <button onclick="setTask(this)" data-task="自社の強みを活かした新規事業の可能性を3案提案してください。"
+              class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">新規事業</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <div class="text-xs text-slate-500">
+            参考API価格: <span class="text-slate-400">¥20〜40</span> ／ 実際の課金:
+            <span class="text-emerald-400 font-medium">¥0</span>（Proプラン）
+          </div>
+          <button id="run-btn" onclick="run()"
+            class="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 active:bg-violet-700
+                   disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed
+                   text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
+            <span id="btn-icon">▶</span>
+            <span id="btn-label">実行</span>
+          </button>
+        </div>
       </div>
-      <div id="result-content" class="prose text-slate-200 text-sm leading-relaxed"></div>
+
+      <!-- Progress Card -->
+      <div id="progress-card" class="bg-slate-900 rounded-2xl border border-slate-800 p-5 hidden">
+        <div class="flex items-center gap-2 mb-4">
+          <span id="progress-icon" class="text-base">⚡</span>
+          <h2 class="text-sm font-semibold text-slate-300" id="progress-title">進行状況</h2>
+          <div id="spinner" class="ml-auto text-violet-400 text-xs animate-spin-slow hidden">⟳</div>
+        </div>
+        <p id="status-msg" class="text-xs text-violet-300 mb-4 min-h-[1rem]"></p>
+        <div id="dept-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
+      </div>
+
+      <!-- Result Card -->
+      <div id="result-card" class="bg-slate-900 rounded-2xl border border-slate-800 p-5 hidden">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+          <h2 class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+            <span>📋</span> 社長決裁
+          </h2>
+          <div id="cost-display" class="text-xs text-slate-500"></div>
+        </div>
+        <div id="result-content" class="prose text-slate-200 text-sm leading-relaxed"></div>
+      </div>
     </div>
 
   </main>
 
-  <script>
-    const DEPT_ICONS = {
-      marketing:'📊', sns_pr:'📱', sales:'💼', finance:'💰',
-      analytics:'📈', product:'🛠️', hr:'👥', customer_success:'🤝',
-      legal:'⚖️', strategy:'🎯', president:'👑'
-    }
-    const DEPT_LABELS = {
-      marketing:'マーケティング', sns_pr:'SNS広報', sales:'営業',
-      finance:'財務', analytics:'データ分析', product:'プロダクト',
-      hr:'HR', customer_success:'CS', legal:'法務', strategy:'戦略'
-    }
+  <!-- ══ Skill Detail Modal ════════════════════════════════════ -->
+  <div id="skill-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <span id="modal-icon" class="text-3xl"></span>
+          <div>
+            <h3 id="modal-name" class="text-base font-bold text-white"></h3>
+            <div class="flex gap-1.5 mt-1">
+              <span id="modal-plan-badge" class="text-xs px-2 py-0.5 rounded-full border font-medium"></span>
+              <span id="modal-price" class="text-xs text-slate-400 py-0.5"></span>
+            </div>
+          </div>
+        </div>
+        <button onclick="closeModal()" class="text-slate-500 hover:text-slate-300 text-xl leading-none">&times;</button>
+      </div>
+      <p id="modal-description" class="text-sm text-slate-300 mb-4 leading-relaxed"></p>
+      <div class="mb-4">
+        <p class="text-xs font-semibold text-violet-400 uppercase tracking-wider mb-2">こんなタスクに使えます</p>
+        <ul id="modal-tasks" class="space-y-1.5"></ul>
+      </div>
+      <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm py-2 rounded-xl transition-colors">閉じる</button>
+    </div>
+  </div>
 
-    let es = null
-    let presets = []
+<script>
+  /* ─── Constants ──────────────────────────────────────────── */
+  const SKILL_ICONS = {
+    president:'👑', marketing:'📊', sns_pr:'📱', sales:'💼',
+    finance:'💰', hr:'👥', analytics:'📈', product:'🛠️',
+    customer_success:'🤝', legal:'⚖️', strategy:'🎯',
+    strength_discovery:'🔍',
+    brand_design:'🎨', architecture_viz:'🏛️', ux_design:'💻',
+    copywriting:'✍️', restaurant_ops:'🍽️', manufacturing:'⚙️',
+    medical:'🏥', real_estate:'🏠', video_content:'🎬', ec_specialist:'🛒'
+  }
 
-    /* ── 初期化 ──────────────────────────────────────────── */
-    async function loadPresets() {
-      const res = await fetch('/v1/companies/presets')
-      const data = await res.json()
-      presets = data.presets
-      const sel = document.getElementById('company-select')
+  const PLAN_ORDER = ['starter','growth','business','enterprise']
+  const PLAN_LABEL = { starter:'必須', growth:'Growth', business:'Business', enterprise:'Enterprise' }
+  const PLAN_BADGE = {
+    starter:'plan-badge-starter', growth:'plan-badge-growth',
+    business:'plan-badge-business', enterprise:'plan-badge-enterprise'
+  }
+  const CAT_LABEL = {
+    core:'基盤', marketing:'マーケ', sales:'営業', finance:'財務',
+    hr:'人事', analytics:'分析', creative:'クリエイティブ',
+    industry:'業界専門', strategy:'戦略', service:'CS', legal:'法務',
+    product:'プロダクト', general:'汎用'
+  }
+
+  /* ─── State ──────────────────────────────────────────────── */
+  let currentTab = 'execute'
+  let marketPlan = 'business'
+  let currentCategory = 'all'
+  let allSkills = []
+  let presets = []
+  let es = null
+
+  /* ─── Tab Switching ──────────────────────────────────────── */
+  function switchTab(name) {
+    ['dna','skills','execute'].forEach(t => {
+      document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== name)
+      document.getElementById(`tab-${t}`).classList.toggle('active', t === name)
+    })
+    currentTab = name
+    if (name === 'skills' && allSkills.length === 0) loadSkills()
+  }
+
+  /* ─── Presets (companies) ────────────────────────────────── */
+  async function loadPresets() {
+    const res = await fetch('/v1/companies/presets')
+    const data = await res.json()
+    presets = data.presets
+
+    const populateSel = (selId) => {
+      const sel = document.getElementById(selId)
       sel.innerHTML = ''
       presets.forEach(p => {
         const opt = document.createElement('option')
@@ -173,133 +454,395 @@
         opt.textContent = `${p.name}（${p.industry}）`
         sel.appendChild(opt)
       })
-      updateMission()
     }
+    populateSel('company-select')
+    populateSel('dna-company-select')
 
-    function updateMission() {
-      const val = document.getElementById('company-select').value
-      const p = presets.find(x => x.id === val)
-      document.getElementById('company-mission').textContent = p ? p.mission : ''
+    onCompanyChange()
+    onDnaCompanyChange()
+  }
+
+  function updateMission() {
+    const val = document.getElementById('company-select').value
+    const p = presets.find(x => x.id === val)
+    document.getElementById('company-mission').textContent = p ? p.mission : ''
+  }
+
+  async function onCompanyChange() {
+    updateMission()
+    const cid = document.getElementById('company-select').value
+    if (!cid) return
+    try {
+      const res = await fetch(`/v1/companies/${cid}/dna`)
+      const hasDna = res.ok
+      document.getElementById('exec-dna-badge').classList.toggle('hidden', !hasDna)
+    } catch { document.getElementById('exec-dna-badge').classList.add('hidden') }
+  }
+
+  async function onDnaCompanyChange() {
+    const cid = document.getElementById('dna-company-select').value
+    if (!cid) return
+    const p = presets.find(x => x.id === cid)
+    if (p) {
+      document.getElementById('dna-company-name').value = p.name
+      document.getElementById('dna-industry').value = p.industry
     }
-
-    document.getElementById('company-select').addEventListener('change', updateMission)
-
-    function setTask(btn) {
-      document.getElementById('task-input').value = btn.dataset.task
-    }
-
-    /* ── UI状態管理 ──────────────────────────────────────── */
-    function setRunning(on) {
-      const btn = document.getElementById('run-btn')
-      btn.disabled = on
-      document.getElementById('btn-icon').textContent  = on ? '⏳' : '▶'
-      document.getElementById('btn-label').textContent = on ? '実行中...' : '実行'
-      document.getElementById('spinner').classList.toggle('hidden', !on)
-    }
-
-    function setStatus(msg) {
-      document.getElementById('status-msg').textContent = msg
-    }
-
-    function showCard(id)  { document.getElementById(id).classList.remove('hidden') }
-    function hideCard(id)  { document.getElementById(id).classList.add('hidden') }
-    function resetCards()  {
-      hideCard('result-card')
-      document.getElementById('dept-grid').innerHTML = ''
-      document.getElementById('progress-icon').textContent = '⚡'
-      document.getElementById('progress-title').textContent = '進行状況'
-    }
-
-    /* ── 部門カード ──────────────────────────────────────── */
-    function renderDepts(departments) {
-      const grid = document.getElementById('dept-grid')
-      grid.innerHTML = ''
-      departments.forEach(dep => {
-        const icon  = DEPT_ICONS[dep]  || '🔷'
-        const label = DEPT_LABELS[dep] || dep
-        const card = document.createElement('div')
-        card.id = `dept-${dep}`
-        card.className = 'dept-card running bg-slate-800/80 border border-amber-800/60 rounded-xl p-3 flex items-center gap-2.5'
-        card.innerHTML = `
-          <span class="text-xl flex-shrink-0">${icon}</span>
-          <div class="flex-1 min-w-0">
-            <div class="text-xs font-semibold text-slate-200 truncate">${label}</div>
-            <div class="text-xs text-amber-400 mt-0.5 dept-status animate-blink">実行中...</div>
-          </div>`
-        grid.appendChild(card)
-      })
-    }
-
-    function markDeptDone(dep, display, status) {
-      const card = document.getElementById(`dept-${dep}`)
-      if (!card) return
-      const ok = status === 'done'
-      card.className = `dept-card ${ok ? 'done' : 'error'} bg-slate-800/80 border rounded-xl p-3 flex items-center gap-2.5`
-      const el = card.querySelector('.dept-status')
-      if (el) {
-        el.className = `text-xs mt-0.5 dept-status ${ok ? 'text-emerald-400' : 'text-red-400'}`
-        el.textContent = ok ? '✓ 完了' : '✗ エラー'
+    try {
+      const res = await fetch(`/v1/companies/${cid}/dna`)
+      if (res.ok) {
+        const dna = await res.json()
+        fillDnaForm(dna)
+        if (dna.has_strength_report) loadStrengthReport(cid)
       }
+    } catch {}
+  }
+
+  function fillDnaForm(dna) {
+    const f = (id, val) => { if (document.getElementById(id)) document.getElementById(id).value = val || '' }
+    f('dna-company-name',  dna.company_name)
+    f('dna-industry',      dna.industry)
+    f('dna-employee-count',dna.employee_count)
+    f('dna-revenue-range', dna.revenue_range)
+    f('dna-target-customers', dna.target_customers)
+    f('dna-competitors',   dna.competitors)
+    f('dna-self-strengths',dna.self_strengths)
+    f('dna-challenges',    dna.challenges)
+    f('dna-goal-3m',       dna.goal_3m)
+    f('dna-goal-1y',       dna.goal_1y)
+    f('dna-plan',          dna.plan || 'starter')
+  }
+
+  /* ─── DNA Save ───────────────────────────────────────────── */
+  async function saveDNA() {
+    const cid = document.getElementById('dna-company-select').value
+    if (!cid) { showSaveMsg('企業を選択してください', 'text-amber-400'); return }
+    const payload = {
+      company_name:     document.getElementById('dna-company-name').value,
+      industry:         document.getElementById('dna-industry').value,
+      employee_count:   document.getElementById('dna-employee-count').value,
+      revenue_range:    document.getElementById('dna-revenue-range').value,
+      target_customers: document.getElementById('dna-target-customers').value,
+      competitors:      document.getElementById('dna-competitors').value,
+      self_strengths:   document.getElementById('dna-self-strengths').value,
+      challenges:       document.getElementById('dna-challenges').value,
+      goal_3m:          document.getElementById('dna-goal-3m').value,
+      goal_1y:          document.getElementById('dna-goal-1y').value,
+      plan:             document.getElementById('dna-plan').value,
     }
+    showSaveMsg('保存中...', 'text-slate-400')
+    const res = await fetch(`/v1/companies/${cid}/dna`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    })
+    if (res.ok) {
+      showSaveMsg('✓ 保存しました', 'text-emerald-400')
+      document.getElementById('dna-status-badge').classList.remove('hidden')
+    } else {
+      showSaveMsg('保存に失敗しました', 'text-red-400')
+    }
+  }
 
-    /* ── 実行 ────────────────────────────────────────────── */
-    async function run() {
-      const company = document.getElementById('company-select').value
-      const task    = document.getElementById('task-input').value.trim()
-      if (!company || !task) { alert('企業とタスクを入力してください'); return }
-      if (es) { es.close(); es = null }
+  function showSaveMsg(msg, cls) {
+    const el = document.getElementById('dna-save-msg')
+    el.textContent = msg
+    el.className = `text-xs ${cls}`
+  }
 
-      setRunning(true)
-      resetCards()
-      showCard('progress-card')
-      setStatus('接続中...')
+  /* ─── Strength Analysis ──────────────────────────────────── */
+  async function analyzeStrengths() {
+    const cid = document.getElementById('dna-company-select').value
+    if (!cid) { alert('企業を選択してください'); return }
+    const btn = document.getElementById('analyze-btn')
+    btn.disabled = true
+    document.getElementById('analyze-icon').textContent = '⏳'
+    document.getElementById('analyze-label').textContent = '分析中（30秒ほど）...'
+    document.getElementById('strength-placeholder').classList.add('hidden')
 
-      const url = `/v1/stream?company=${encodeURIComponent(company)}&task=${encodeURIComponent(task)}`
-      es = new EventSource(url)
+    try {
+      const res = await fetch(`/v1/companies/${cid}/analyze-strengths`, { method: 'POST' })
+      if (!res.ok) throw new Error(await res.text())
+      const data = await res.json()
+      showStrengthReport(data.strength_report)
+      document.getElementById('dna-status-badge').classList.remove('hidden')
+    } catch (e) {
+      document.getElementById('strength-placeholder').textContent = `エラー: ${e.message}`
+      document.getElementById('strength-placeholder').classList.remove('hidden')
+    } finally {
+      btn.disabled = false
+      document.getElementById('analyze-icon').textContent = '⚡'
+      document.getElementById('analyze-label').textContent = '再分析する'
+    }
+  }
 
-      es.onmessage = (e) => {
-        if (e.data === '[DONE]') {
-          es.close(); es = null
-          setRunning(false)
-          setStatus('全工程が完了しました')
-          document.getElementById('progress-icon').textContent = '✅'
-          document.getElementById('progress-title').textContent = '完了'
-          return
-        }
-        try {
-          const msg = JSON.parse(e.data)
-          if      (msg.type === 'status')      { setStatus(msg.message) }
-          else if (msg.type === 'delegations') { renderDepts(msg.departments) }
-          else if (msg.type === 'dept_done')   { markDeptDone(msg.department, msg.display, msg.status) }
-          else if (msg.type === 'result')      { showResult(msg.content, msg.cost_ref) }
-          else if (msg.type === 'error')       {
-            setStatus('⚠ ' + msg.message)
-            setRunning(false)
-          }
-        } catch { /* ignore parse errors */ }
+  async function loadStrengthReport(cid) {
+    try {
+      const res = await fetch(`/v1/companies/${cid}/dna`)
+      if (!res.ok) return
+      const dna = await res.json()
+      if (dna.has_strength_report) {
+        const r2 = await fetch(`/v1/companies/${cid}/dna`)
+        // Re-fetch to get strength_report — it's not in CompanyDNAResponse, so we inline here
+        // The strength_report is shown via the analyze endpoint, load from analyze-strengths
       }
+    } catch {}
+  }
 
-      es.onerror = () => {
-        es.close(); es = null
-        setRunning(false)
-        setStatus('⚠ 接続エラーが発生しました。もう一度お試しください。')
-      }
+  function showStrengthReport(text) {
+    const el = document.getElementById('strength-report')
+    el.innerHTML = marked.parse(text)
+    el.classList.remove('hidden')
+    document.getElementById('strength-placeholder').classList.add('hidden')
+  }
+
+  /* ─── Skill Marketplace ──────────────────────────────────── */
+  async function loadSkills() {
+    const res = await fetch('/v1/skills')
+    const data = await res.json()
+    allSkills = data.skills.filter(s => s.role_id !== 'president')
+    renderSkillGrid()
+  }
+
+  function setMarketPlan(plan) {
+    marketPlan = plan
+    document.querySelectorAll('.market-plan-btn').forEach(b => b.classList.remove('active-plan','bg-violet-900','text-violet-300','border-violet-700'))
+    const btn = document.getElementById(`mp-${plan}`)
+    btn.classList.add('active-plan','bg-violet-900','text-violet-300','border-violet-700')
+    renderSkillGrid()
+  }
+
+  function filterCategory(cat) {
+    currentCategory = cat
+    document.querySelectorAll('.cat-btn').forEach(b => {
+      b.classList.remove('active-cat','bg-slate-800','text-slate-300')
+      b.classList.add('bg-slate-900','text-slate-400')
+    })
+    const btn = document.getElementById(`cat-${cat}`)
+    if (btn) { btn.classList.add('active-cat','bg-slate-800','text-slate-300') }
+    renderSkillGrid()
+  }
+
+  function renderSkillGrid() {
+    const grid = document.getElementById('skill-grid')
+    grid.innerHTML = ''
+    const planIdx = PLAN_ORDER.indexOf(marketPlan)
+
+    let filtered = allSkills
+    if (currentCategory !== 'all') {
+      filtered = filtered.filter(s => s.category === currentCategory)
     }
 
-    function showResult(content, costRef) {
-      showCard('result-card')
-      document.getElementById('result-content').innerHTML = marked.parse(content)
-      document.getElementById('cost-display').textContent =
-        `参考API価格: ¥${costRef}（Proプラン: ¥0）`
-      document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    filtered.forEach(skill => {
+      const skillPlanIdx = PLAN_ORDER.indexOf(skill.plan_required)
+      const unlocked = skillPlanIdx <= planIdx
+      const icon = SKILL_ICONS[skill.role_id] || '🔷'
+      const badgeCls = PLAN_BADGE[skill.plan_required] || 'plan-badge-starter'
+      const planLbl = PLAN_LABEL[skill.plan_required] || skill.plan_required
+      const catLbl = CAT_LABEL[skill.category] || skill.category
+      const price = skill.monthly_price_jpy === 0 ? '基本料に含む' : `¥${skill.monthly_price_jpy.toLocaleString()}/月`
 
-    /* ── キーボードショートカット ───────────────────────── */
-    document.getElementById('task-input').addEventListener('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') run()
+      const card = document.createElement('div')
+      card.className = `skill-card bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col gap-2 ${unlocked ? '' : 'locked'}`
+      card.onclick = () => openModal(skill, unlocked)
+      card.innerHTML = `
+        <div class="flex items-start justify-between">
+          <span class="text-2xl">${icon}</span>
+          <div class="flex flex-col items-end gap-1">
+            <span class="text-xs px-2 py-0.5 rounded-full border font-medium ${badgeCls}">${planLbl}</span>
+            ${!unlocked ? '<span class="text-slate-600 text-sm">🔒</span>' : ''}
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-slate-100">${skill.display_name}</p>
+          <span class="text-xs text-slate-500">${catLbl}</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed line-clamp-2">${skill.preview_text || skill.description}</p>
+        <p class="text-xs text-slate-600 mt-auto">${price}</p>
+      `
+      grid.appendChild(card)
     })
 
-    loadPresets()
-  </script>
+    if (filtered.length === 0) {
+      grid.innerHTML = '<p class="text-sm text-slate-500 col-span-3 py-8 text-center">このカテゴリのスキルはありません</p>'
+    }
+  }
+
+  function openModal(skill, unlocked) {
+    const icon = SKILL_ICONS[skill.role_id] || '🔷'
+    const badgeCls = PLAN_BADGE[skill.plan_required] || 'plan-badge-starter'
+    const planLbl = PLAN_LABEL[skill.plan_required] || skill.plan_required
+    const price = skill.monthly_price_jpy === 0 ? '基本料に含む' : `¥${skill.monthly_price_jpy.toLocaleString()}/月`
+    document.getElementById('modal-icon').textContent = icon
+    document.getElementById('modal-name').textContent = skill.display_name
+    document.getElementById('modal-plan-badge').textContent = planLbl
+    document.getElementById('modal-plan-badge').className = `text-xs px-2 py-0.5 rounded-full border font-medium ${badgeCls}`
+    document.getElementById('modal-price').textContent = price
+    document.getElementById('modal-description').textContent = skill.preview_text || skill.description
+
+    const ul = document.getElementById('modal-tasks')
+    ul.innerHTML = ''
+    const tasks = skill.example_tasks?.length ? skill.example_tasks : ['タスク例がありません']
+    tasks.forEach(t => {
+      const li = document.createElement('li')
+      li.className = 'text-xs text-slate-300 flex gap-2 items-start'
+      li.innerHTML = `<span class="text-violet-400 mt-0.5 flex-shrink-0">▸</span><span>${t}</span>`
+      ul.appendChild(li)
+    })
+
+    if (!unlocked) {
+      const planLblRequired = PLAN_LABEL[skill.plan_required]
+      document.getElementById('modal-description').innerHTML +=
+        `<br><span class="text-amber-400 text-xs">🔒 ${planLblRequired}プランで利用可能</span>`
+    }
+
+    document.getElementById('skill-modal').classList.remove('hidden')
+  }
+
+  function closeModal() {
+    document.getElementById('skill-modal').classList.add('hidden')
+  }
+
+  document.getElementById('skill-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal()
+  })
+
+  /* ─── Execute Tab ────────────────────────────────────────── */
+  function setTask(btn) { document.getElementById('task-input').value = btn.dataset.task }
+
+  function setRunning(on) {
+    const btn = document.getElementById('run-btn')
+    btn.disabled = on
+    document.getElementById('btn-icon').textContent  = on ? '⏳' : '▶'
+    document.getElementById('btn-label').textContent = on ? '実行中...' : '実行'
+    document.getElementById('spinner').classList.toggle('hidden', !on)
+  }
+  function setStatus(msg) { document.getElementById('status-msg').textContent = msg }
+  function showCard(id)   { document.getElementById(id).classList.remove('hidden') }
+  function hideCard(id)   { document.getElementById(id).classList.add('hidden') }
+
+  function resetCards() {
+    hideCard('result-card')
+    document.getElementById('dept-grid').innerHTML = ''
+    document.getElementById('progress-icon').textContent = '⚡'
+    document.getElementById('progress-title').textContent = '進行状況'
+  }
+
+  const DEPT_ICONS = {
+    marketing:'📊', sns_pr:'📱', sales:'💼', finance:'💰',
+    analytics:'📈', product:'🛠️', hr:'👥', customer_success:'🤝',
+    legal:'⚖️', strategy:'🎯', strength_discovery:'🔍',
+    brand_design:'🎨', architecture_viz:'🏛️', ux_design:'💻',
+    copywriting:'✍️', restaurant_ops:'🍽️', manufacturing:'⚙️',
+    medical:'🏥', real_estate:'🏠', video_content:'🎬', ec_specialist:'🛒'
+  }
+  const DEPT_LABELS = {
+    marketing:'マーケティング', sns_pr:'SNS広報', sales:'営業',
+    finance:'財務', analytics:'データ分析', product:'プロダクト',
+    hr:'HR', customer_success:'CS', legal:'法務', strategy:'戦略',
+    strength_discovery:'強み発見', brand_design:'ブランドデザイン',
+    architecture_viz:'建築プレゼン', ux_design:'UI/UX',
+    copywriting:'コピーライター', restaurant_ops:'飲食コンサル',
+    manufacturing:'製造業戦略', medical:'医療・介護',
+    real_estate:'不動産マーケ', video_content:'動画コンテンツ',
+    ec_specialist:'EC専門'
+  }
+
+  function renderDeptCards(departments) {
+    const grid = document.getElementById('dept-grid')
+    grid.innerHTML = ''
+    departments.forEach(dep => {
+      const icon  = DEPT_ICONS[dep]  || '🔷'
+      const label = DEPT_LABELS[dep] || dep
+      const card = document.createElement('div')
+      card.id = `dept-${dep}`
+      card.className = 'dept-card running bg-slate-800/80 border border-amber-800/60 rounded-xl p-3 flex items-center gap-2.5'
+      card.innerHTML = `
+        <span class="text-xl flex-shrink-0">${icon}</span>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-slate-200 truncate">${label}</div>
+          <div class="text-xs text-amber-400 mt-0.5 dept-status animate-blink">実行中...</div>
+        </div>`
+      grid.appendChild(card)
+    })
+  }
+
+  function updateDeptCard(dep, status) {
+    const card = document.getElementById(`dept-${dep}`)
+    if (!card) return
+    card.classList.remove('running','done','error')
+    const statusEl = card.querySelector('.dept-status')
+    if (status === 'done') {
+      card.classList.add('done')
+      statusEl.textContent = '✓ 完了'
+      statusEl.className = 'text-xs text-emerald-400 mt-0.5 dept-status'
+    } else {
+      card.classList.add('error')
+      statusEl.textContent = '✗ エラー'
+      statusEl.className = 'text-xs text-red-400 mt-0.5 dept-status'
+    }
+  }
+
+  function run() {
+    const company = document.getElementById('company-select').value
+    const task    = document.getElementById('task-input').value.trim()
+    if (!company || !task) { alert('企業とタスクを入力してください'); return }
+
+    if (es) { es.close(); es = null }
+    setRunning(true)
+    showCard('progress-card')
+    resetCards()
+    setStatus('社長: 委譲計画を策定中...')
+    document.getElementById('spinner').classList.remove('hidden')
+
+    const url = `/v1/stream?company=${encodeURIComponent(company)}&task=${encodeURIComponent(task)}`
+    es = new EventSource(url)
+
+    es.onmessage = e => {
+      if (e.data === '[DONE]') { es.close(); es = null; return }
+      const msg = JSON.parse(e.data)
+      switch (msg.type) {
+        case 'status':
+          setStatus(msg.message)
+          break
+        case 'delegations':
+          renderDeptCards(msg.departments)
+          setStatus(`${msg.departments.length}部門に指示を委譲中...`)
+          break
+        case 'dept_done':
+          updateDeptCard(msg.department, msg.status)
+          break
+        case 'result':
+          document.getElementById('result-content').innerHTML = marked.parse(msg.content)
+          document.getElementById('cost-display').textContent = `参考API価格: ¥${msg.cost_ref}（実際の課金: ¥0）`
+          showCard('result-card')
+          document.getElementById('progress-icon').textContent = '✅'
+          document.getElementById('progress-title').textContent = '完了'
+          setStatus('全部門が報告完了。社長決裁が出ました。')
+          document.getElementById('spinner').classList.add('hidden')
+          setRunning(false)
+          break
+        case 'error':
+          setStatus(`エラー: ${msg.message}`)
+          document.getElementById('spinner').classList.add('hidden')
+          setRunning(false)
+          break
+      }
+    }
+
+    es.onerror = () => {
+      setStatus('接続エラーが発生しました')
+      document.getElementById('spinner').classList.add('hidden')
+      setRunning(false)
+      es?.close(); es = null
+    }
+  }
+
+  /* ─── Plan button default styles ────────────────────────── */
+  document.querySelectorAll('.market-plan-btn').forEach(b => {
+    b.classList.add('bg-slate-900','text-slate-400','border-slate-700')
+  })
+  document.getElementById('mp-business').classList.add('bg-violet-900','text-violet-300','border-violet-700')
+
+  /* ─── Init ───────────────────────────────────────────────── */
+  loadPresets()
+</script>
 </body>
 </html>

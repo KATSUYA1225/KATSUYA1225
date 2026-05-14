@@ -6,6 +6,13 @@ description: "プロダクトロードマップ・機能仕様・UX設計・リ�
 is_mandatory: false
 price_tier: standard
 monthly_price_jpy: 2980
+plan_required: growth
+category: product
+preview_text: "プロダクト戦略・ロードマップ・機能設計を担当。ユーザーニーズと事業目標を結びつけた製品開発の方向性を提案します。"
+example_tasks:
+  - "次期バージョンの機能ロードマップを作成してください"
+  - "ユーザーリサーチの設計をしてください"
+  - "製品の差別化戦略を立案してください"
 included_in_templates:
   - tech_startup
   - liverty_realm

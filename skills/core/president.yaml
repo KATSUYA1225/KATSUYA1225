@@ -6,6 +6,13 @@ description: "全体戦略の意思決定・部門間調整・最終決裁を行
 is_mandatory: true
 price_tier: included
 monthly_price_jpy: 0
+plan_required: starter
+category: core
+preview_text: "全部門を指揮・統合する最高意思決定機関。タスクを受け取り、必要な専門部門に指示を出し、各報告書を統合して最終的な経営判断を下します。"
+example_tasks:
+  - "来期の経営方針を策定してください"
+  - "新規事業参入の可能性を全部門で分析してください"
+  - "競合比較を踏まえた差別化戦略を立案してください"
 tags:
   - leadership
   - strategy

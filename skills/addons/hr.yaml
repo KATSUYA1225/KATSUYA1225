@@ -6,6 +6,13 @@ description: "採用計画・人材育成・組織設計・カルチャー構築
 is_mandatory: false
 price_tier: standard
 monthly_price_jpy: 2980
+plan_required: growth
+category: hr
+preview_text: "採用・育成・労務管理を担当。優秀な人材の確保から組織文化の構築まで、人的資本の最大化を支援します。"
+example_tasks:
+  - "採用戦略を立案してください"
+  - "社員満足度を向上させる施策を提案してください"
+  - "パフォーマンス評価制度を設計してください"
 included_in_templates:
   - tech_startup
 tags:

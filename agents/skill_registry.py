@@ -20,7 +20,7 @@ class SkillConfig:
     display_name_en: str
     description: str
     is_mandatory: bool
-    price_tier: str  # included | standard | premium
+    price_tier: str  # included | standard | premium | professional
     monthly_price_jpy: int
     model: str
     max_tokens: int
@@ -31,6 +31,10 @@ class SkillConfig:
     capabilities: list[str] = field(default_factory=list)
     included_in_templates: list[str] = field(default_factory=list)
     max_delegation_loops: int = 5  # presidentのみ使用
+    plan_required: str = "starter"  # starter | growth | business | enterprise
+    preview_text: str = ""
+    example_tasks: list[str] = field(default_factory=list)
+    category: str = "general"
 
     def render_system_prompt(self, company: CompanyConfig) -> str:
         vars: dict[str, str] = defaultdict(str, {
@@ -74,6 +78,10 @@ class SkillRegistry:
             capabilities=data.get("capabilities", []),
             included_in_templates=data.get("included_in_templates", []),
             max_delegation_loops=data.get("max_delegation_loops", 5),
+            plan_required=data.get("plan_required", "starter"),
+            preview_text=data.get("preview_text", ""),
+            example_tasks=data.get("example_tasks", []),
+            category=data.get("category", "general"),
         )
 
     def get_skill(self, role_id: str) -> SkillConfig:

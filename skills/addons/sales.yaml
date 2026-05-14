@@ -6,6 +6,13 @@ description: "顧客開拓・提案書作成・商談戦略・パートナー交
 is_mandatory: false
 price_tier: standard
 monthly_price_jpy: 2980
+plan_required: growth
+category: sales
+preview_text: "新規顧客開拓から商談クロージングまでを担当。提案書・見積書の構成、営業パイプライン管理、パートナー戦略をサポートします。"
+example_tasks:
+  - "新規顧客獲得のための営業戦略を立案してください"
+  - "提案書のテンプレートを作成してください"
+  - "営業KPIを設計してください"
 included_in_templates:
   - tech_startup
   - retail_ec

@@ -15,10 +15,13 @@ from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 
 from agents import CompanyConfig, PresidentAgent, SkillRegistry
 from service.models import (
+    CompanyDNARequest,
+    CompanyDNAResponse,
     CompanyRegistrationRequest,
     CompanyResponse,
     SkillCatalogResponse,
     SkillInfo,
+    StrengthAnalysisResponse,
     TaskRequest,
     TaskResponse,
     TaskStatusResponse,
@@ -26,6 +29,7 @@ from service.models import (
 )
 from service.usage_tracker import UsageTracker
 from service import stream as stream_module
+from service.company_store import load_dna, save_dna, dna_to_context
 
 load_dotenv()
 
@@ -92,10 +96,14 @@ async def _run_task_bg(task_id: str, company_config: CompanyConfig, task_text: s
 # ── エンドポイント ───────────────────────────────────────────
 
 @app.get("/v1/skills", response_model=SkillCatalogResponse, summary="スキルカタログ（公開）")
-async def list_skills(tier: str | None = None) -> SkillCatalogResponse:
+async def list_skills(tier: str | None = None, plan: str | None = None) -> SkillCatalogResponse:
     skills = registry.list_skills()
     if tier:
         skills = [s for s in skills if s.price_tier == tier]
+    _plan_order = ["starter", "growth", "business", "enterprise"]
+    if plan and plan in _plan_order:
+        idx = _plan_order.index(plan)
+        skills = [s for s in skills if _plan_order.index(s.plan_required) <= idx]
     items = [
         SkillInfo(
             role_id=s.role_id,
@@ -107,6 +115,10 @@ async def list_skills(tier: str | None = None) -> SkillCatalogResponse:
             tags=s.tags,
             capabilities=s.capabilities,
             is_mandatory=s.is_mandatory,
+            plan_required=s.plan_required,
+            preview_text=s.preview_text,
+            example_tasks=s.example_tasks,
+            category=s.category,
         )
         for s in skills
     ]
@@ -219,6 +231,105 @@ async def stream_task(company: str, task: str) -> StreamingResponse:
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no", "Connection": "keep-alive"},
     )
+
+
+@app.post("/v1/companies/{company_id}/dna", response_model=CompanyDNAResponse, summary="企業DNA保存")
+async def save_company_dna(company_id: str, req: CompanyDNARequest) -> CompanyDNAResponse:
+    data = req.model_dump()
+    saved = save_dna(company_id, data)
+    return CompanyDNAResponse(
+        company_id=company_id,
+        company_name=saved.get("company_name", ""),
+        industry=saved.get("industry", ""),
+        employee_count=saved.get("employee_count", ""),
+        revenue_range=saved.get("revenue_range", ""),
+        target_customers=saved.get("target_customers", ""),
+        competitors=saved.get("competitors", ""),
+        self_strengths=saved.get("self_strengths", ""),
+        challenges=saved.get("challenges", ""),
+        goal_3m=saved.get("goal_3m", ""),
+        goal_1y=saved.get("goal_1y", ""),
+        plan=saved.get("plan", "starter"),
+        has_strength_report=bool(saved.get("strength_report")),
+        updated_at=saved.get("updated_at"),
+    )
+
+
+@app.get("/v1/companies/{company_id}/dna", response_model=CompanyDNAResponse, summary="企業DNA取得")
+async def get_company_dna(company_id: str) -> CompanyDNAResponse:
+    dna = load_dna(company_id)
+    if dna is None:
+        raise HTTPException(status_code=404, detail=f"DNA not found for '{company_id}'")
+    return CompanyDNAResponse(
+        company_id=company_id,
+        company_name=dna.get("company_name", ""),
+        industry=dna.get("industry", ""),
+        employee_count=dna.get("employee_count", ""),
+        revenue_range=dna.get("revenue_range", ""),
+        target_customers=dna.get("target_customers", ""),
+        competitors=dna.get("competitors", ""),
+        self_strengths=dna.get("self_strengths", ""),
+        challenges=dna.get("challenges", ""),
+        goal_3m=dna.get("goal_3m", ""),
+        goal_1y=dna.get("goal_1y", ""),
+        plan=dna.get("plan", "starter"),
+        has_strength_report=bool(dna.get("strength_report")),
+        updated_at=dna.get("updated_at"),
+    )
+
+
+@app.post("/v1/companies/{company_id}/analyze-strengths", response_model=StrengthAnalysisResponse,
+          summary="強み分析（AI）")
+async def analyze_strengths(company_id: str) -> StrengthAnalysisResponse:
+    dna = load_dna(company_id)
+    if not dna:
+        raise HTTPException(status_code=404, detail=f"先に企業DNAを保存してください: '{company_id}'")
+
+    company_name = dna.get("company_name") or company_id
+    industry = dna.get("industry", "")
+    context = dna_to_context(dna)
+
+    prompt = f"""企業名: {company_name}
+業界: {industry}
+
+{context}
+
+上記の企業情報をもとに、以下の観点で強みを徹底分析してください：
+
+1. 自己評価された強みの客観的検証（本当に強みか？競合と比べてどうか？）
+2. 業界・市場トレンドとの照合（時流に乗れているか）
+3. 競合他社との差別化ポイントの特定
+4. 潜在的に見落とされている優位性の発見
+5. 強みを軸にした戦略方向性の提案（3つ）
+
+【強みレポート】として以下の構成で出力してください：
+## ✅ 強みの検証
+## 🎯 競合優位性
+## 💎 潜在的な強み（気づいていない優位性）
+## 🚀 推奨戦略方向性（3つ）"""
+
+    system = (
+        f"あなたは{company_name}の強み発見を専門とする経営コンサルタントです。"
+        f"業界: {industry}。"
+        "客観的データと論理的思考をもとに、企業の真の強みを発見・言語化します。"
+        "感情論ではなく、競合比較・市場ポジション・顧客価値の観点から分析します。"
+    )
+
+    proc = await asyncio.create_subprocess_exec(
+        "claude", "-p", prompt,
+        "--system-prompt", system,
+        "--model", "claude-sonnet-4-6",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await proc.communicate()
+    if proc.returncode != 0:
+        raise HTTPException(status_code=500, detail=f"分析エラー: {stderr.decode()[:300]}")
+
+    report = stdout.decode().strip()
+    save_dna(company_id, {"strength_report": report})
+
+    return StrengthAnalysisResponse(company_id=company_id, strength_report=report)
 
 
 @app.get("/health")

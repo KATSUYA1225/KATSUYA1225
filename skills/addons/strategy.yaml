@@ -6,6 +6,13 @@ description: "競合分析・市場規模調査・ビジネスモデル設計・
 is_mandatory: false
 price_tier: premium
 monthly_price_jpy: 4980
+plan_required: business
+category: strategy
+preview_text: "中長期戦略・新規事業開発・競合分析を担当。業界トレンドと競合分析をもとに、事業の方向性と成長戦略を策定します。"
+example_tasks:
+  - "3年間の中期経営計画を策定してください"
+  - "新規事業の市場機会を分析してください"
+  - "競合他社の戦略を分析し差別化ポイントを特定してください"
 included_in_templates:
   - consulting
 tags:

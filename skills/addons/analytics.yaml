@@ -6,6 +6,13 @@ description: "KPI設計・A/Bテスト設計・コホート分析・データド
 is_mandatory: false
 price_tier: standard
 monthly_price_jpy: 2980
+plan_required: growth
+category: analytics
+preview_text: "データ分析・KPI設計・ダッシュボード設計を担当。ビジネスデータから意思決定につながるインサイトを抽出します。"
+example_tasks:
+  - "売上データを分析して改善点を洗い出してください"
+  - "重要KPIを設計してください"
+  - "顧客行動の分析レポートを作成してください"
 included_in_templates:
   - tech_startup
   - retail_ec

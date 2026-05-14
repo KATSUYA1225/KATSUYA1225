@@ -6,6 +6,13 @@ description: "ブランド戦略・キャンペーン設計・市場調査・顧
 is_mandatory: true
 price_tier: included
 monthly_price_jpy: 0
+plan_required: starter
+category: marketing
+preview_text: "ブランド戦略・顧客獲得・市場調査を担当。ターゲット設計からキャンペーン立案まで、売上に直結するマーケティング施策を提案します。"
+example_tasks:
+  - "新規顧客獲得コストを削減する施策を3つ提案してください"
+  - "競合との差別化ポイントを整理してブランド戦略を立案してください"
+  - "ターゲット顧客のペルソナを設計してください"
 tags:
   - marketing
   - brand

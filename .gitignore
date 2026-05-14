@@ -12,6 +12,7 @@ env/
 
 # データ・ログ
 data/usage.db
+data/dna/
 logs/
 
 # IDE

@@ -6,6 +6,13 @@ description: "顧客オンボーディング・チャーン防止・NPS改善・
 is_mandatory: false
 price_tier: standard
 monthly_price_jpy: 2980
+plan_required: growth
+category: service
+preview_text: "顧客満足・解約防止・アップセルを担当。顧客との長期関係構築とLTV最大化のための戦略を設計します。"
+example_tasks:
+  - "解約率を下げるための施策を提案してください"
+  - "オンボーディングプロセスを改善してください"
+  - "カスタマーサクセスのKPIを設計してください"
 included_in_templates:
   - retail_ec
   - liverty_realm

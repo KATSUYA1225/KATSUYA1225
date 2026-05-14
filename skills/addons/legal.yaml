@@ -6,6 +6,13 @@ description: "契約書ドラフト・利用規約・プライバシーポリシ
 is_mandatory: false
 price_tier: premium
 monthly_price_jpy: 4980
+plan_required: growth
+category: legal
+preview_text: "契約・法令遵守・リスク管理を担当。ビジネス上の法的リスクを洗い出し、適切な対策を提案します（正式な法的アドバイスは専門家へ）。"
+example_tasks:
+  - "利用規約の構成と注意点をチェックしてください"
+  - "契約書に含めるべき条項を整理してください"
+  - "個人情報保護対応の確認事項をリストアップしてください"
 included_in_templates:
   - consulting
 tags:

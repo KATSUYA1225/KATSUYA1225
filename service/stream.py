@@ -95,7 +95,19 @@ async def run_stream(company_yaml: str, task: str) -> AsyncGenerator[str, None]:
         yield _sse("error", message=f"企業設定ファイルが見つかりません: {company_yaml}")
         return
 
-    company = _load_yaml(path)
+    company = dict(_load_yaml(path))
+
+    # 企業DNAが登録済みであればコンテキストに注入する
+    try:
+        from service.company_store import load_dna, dna_to_context
+        dna = load_dna(company_yaml)
+        if dna:
+            extra = dna_to_context(dna)
+            if extra:
+                company["company_context"] = company.get("company_context", "") + "\n\n" + extra
+    except Exception:
+        pass
+
     mandatory = ["president", "marketing", "sns_pr"]
     emp_ids = list(dict.fromkeys(mandatory + company.get("active_addons", [])))
     emp_ids = [s for s in emp_ids if s != "president"]

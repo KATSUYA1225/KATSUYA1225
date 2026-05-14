@@ -6,6 +6,13 @@ description: "SNS運用・PR戦略・インフルエンサー連携・コミュ�
 is_mandatory: true
 price_tier: included
 monthly_price_jpy: 0
+plan_required: starter
+category: marketing
+preview_text: "SNS・プレスリリース・コンテンツ配信を専門とするPR担当。拡散力のあるコンテンツ設計とメディア戦略で認知度向上を支援します。"
+example_tasks:
+  - "Instagram投稿計画を1ヶ月分作成してください"
+  - "プレスリリースの文案を作成してください"
+  - "バイラルしやすいコンテンツアイデアを10個出してください"
 tags:
   - sns
   - pr
