@@ -241,6 +241,36 @@ async def app_ui() -> HTMLResponse:
     return HTMLResponse(content=html)
 
 
+@app.get("/skill", response_class=HTMLResponse, include_in_schema=False)
+async def skill_page() -> HTMLResponse:
+    html = (Path(__file__).parent.parent / "static" / "skill.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html)
+
+
+@app.get("/v1/skills/{role_id}", summary="スキル詳細")
+async def get_skill_detail(role_id: str) -> dict:
+    from fastapi import HTTPException
+    try:
+        s = registry.get_skill(role_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"Skill '{role_id}' not found")
+    return {
+        "role_id": s.role_id,
+        "display_name": s.display_name,
+        "display_name_en": s.display_name_en,
+        "description": s.description,
+        "is_mandatory": s.is_mandatory,
+        "price_tier": s.price_tier,
+        "monthly_price_jpy": s.monthly_price_jpy,
+        "plan_required": s.plan_required,
+        "category": s.category,
+        "tags": s.tags,
+        "capabilities": s.capabilities,
+        "example_tasks": s.example_tasks,
+        "preview_text": s.preview_text,
+    }
+
+
 @app.get("/v1/companies/presets", summary="企業一覧（YAML + DNA登録済み）")
 async def list_presets() -> dict:
     yaml_presets = {p["id"]: p for p in stream_module.list_presets()}

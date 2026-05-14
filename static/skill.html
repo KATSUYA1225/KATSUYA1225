@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スキル詳細 — AI企業OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@300;400;500&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#020408;color:#e8f0ff;font-family:'Inter',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
+#cr{width:22px;height:22px;border:1.5px solid rgba(0,212,255,.7);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .18s,height .18s,border-color .2s,background .2s}
+#cd{width:5px;height:5px;background:#00d4ff;border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+#cr.h{width:38px!important;height:38px!important;border-color:rgba(124,58,237,.8)!important;background:rgba(124,58,237,.08)!important}
+@media(hover:none){#cr,#cd{display:none}body{cursor:auto}}
+:root{--c1:#00d4ff;--c2:#7c3aed;--c3:#e879f9;--c4:#f59e0b;--bg:#020408;--bdr:rgba(255,255,255,.07);--t1:#f0f4ff;--t2:#8899bb;--t3:#445577;--acc:var(--c1)}
+.wrap{max-width:960px;margin:0 auto;padding:0 28px}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif}
+.grd{background:linear-gradient(135deg,var(--acc),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* Nav */
+#nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 28px;background:rgba(2,4,8,.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr)}
+.nav-in{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:16px}
+.nlogo{text-decoration:none;color:var(--t2);font-family:'Space Grotesk',sans-serif;font-size:.88rem;display:flex;align-items:center;gap:8px}
+.nback{color:var(--t2);font-size:.82rem;transition:color .2s;text-decoration:none;display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace}
+.nback:hover{color:var(--acc)}
+.nback::before{content:'←';font-size:.9rem}
+.n-sep{color:var(--t3);font-size:.8rem}
+#nav-skill-name{color:var(--t2);font-size:.82rem;font-family:'Space Grotesk',sans-serif}
+.nav-cta{margin-left:auto}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:7px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.85rem;text-decoration:none;cursor:pointer;border:none;transition:all .22s;white-space:nowrap}
+.btn-p{background:linear-gradient(135deg,var(--acc),var(--c2));color:#fff;box-shadow:0 0 16px rgba(0,212,255,.2)}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 0 28px rgba(0,212,255,.35)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--bdr)}
+.btn-g:hover{color:var(--t1);border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04)}
+
+/* Hero */
+#hero{padding:120px 28px 64px;text-align:center;position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(0,212,255,.05) 0%,transparent 65%);pointer-events:none}
+#hero::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.018) 1px,transparent 1px);background-size:52px 52px;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+.skill-cat-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:100px;border:1px solid var(--bdr);font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:24px;position:relative;z-index:1}
+.skill-cat-dot{width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.skill-icon-wrap{font-size:4.5rem;margin-bottom:20px;display:block;position:relative;z-index:1;filter:drop-shadow(0 0 20px rgba(0,212,255,.3))}
+.skill-name{font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:800;letter-spacing:-.03em;margin-bottom:16px;position:relative;z-index:1}
+.skill-tagline{max-width:600px;margin:0 auto 32px;color:var(--t2);font-size:1.05rem;line-height:1.8;position:relative;z-index:1;font-family:'Noto Serif JP',serif;font-weight:300}
+.hero-meta{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:36px;position:relative;z-index:1}
+.price-chip{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:100px;padding:6px 18px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--t1)}
+.plan-chip{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:100px;padding:6px 14px;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#a78bfa}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+
+/* Section */
+.sec{padding:72px 0;border-top:1px solid var(--bdr)}
+.sec-lbl{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--acc);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+.sec-tit{font-size:1.7rem;font-weight:700;color:var(--t1);margin-bottom:8px;letter-spacing:-.02em}
+.sec-sub{color:var(--t2);font-size:.92rem;line-height:1.78;font-family:'Noto Serif JP',serif;font-weight:300;max-width:560px}
+
+/* Benefits grid */
+.benefits-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px}
+.bcard{background:rgba(8,14,28,.85);border:1px solid var(--bdr);border-radius:14px;padding:28px 24px;transition:all .28s;position:relative;overflow:hidden}
+.bcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--acc),var(--c2));opacity:0;transition:opacity .3s}
+.bcard:hover{border-color:rgba(0,212,255,.2);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,212,255,.08)}
+.bcard:hover::before{opacity:1}
+.b-icon{font-size:1.6rem;margin-bottom:14px;display:block;filter:drop-shadow(0 0 6px rgba(0,212,255,.2))}
+.b-title{font-size:.95rem;font-weight:700;color:var(--t1);margin-bottom:8px;letter-spacing:-.01em}
+.b-body{font-size:.84rem;color:var(--t2);line-height:1.78;font-family:'Noto Serif JP',serif;font-weight:300}
+@media(max-width:600px){.benefits-grid{grid-template-columns:1fr}}
+
+/* Capabilities */
+.cap-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:32px}
+.cap-item{display:flex;align-items:flex-start;gap:10px;background:rgba(8,14,28,.6);border:1px solid var(--bdr);border-radius:8px;padding:13px 16px;transition:border-color .25s}
+.cap-item:hover{border-color:rgba(0,212,255,.2)}
+.cap-check{color:var(--acc);font-weight:700;flex-shrink:0;font-size:.9rem;margin-top:1px}
+.cap-text{font-size:.84rem;color:var(--t2);line-height:1.5}
+@media(max-width:560px){.cap-list{grid-template-columns:1fr}}
+
+/* Example tasks */
+.ex-list{margin-top:32px;display:flex;flex-direction:column;gap:10px}
+.ex-item{background:rgba(8,14,28,.6);border:1px solid var(--bdr);border-radius:10px;padding:16px 20px;display:flex;align-items:flex-start;gap:14px;transition:all .25s;cursor:default}
+.ex-item:hover{border-color:rgba(0,212,255,.2);background:rgba(0,212,255,.04)}
+.ex-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--acc);background:rgba(0,212,255,.1);border-radius:100px;padding:3px 10px;flex-shrink:0;margin-top:1px}
+.ex-text{font-size:.9rem;color:var(--t2);line-height:1.6;font-family:'Noto Serif JP',serif;font-weight:300}
+
+/* Pricing section */
+.price-card{background:rgba(8,14,28,.85);border:1px solid rgba(0,212,255,.22);border-radius:16px;padding:36px 32px;max-width:520px;position:relative;overflow:hidden}
+.price-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,212,255,.05),transparent 60%)}
+.pc-plan{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--acc);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+.pc-price{font-family:'Space Grotesk',sans-serif;font-size:2.8rem;font-weight:800;color:var(--t1);line-height:1;margin-bottom:4px}
+.pc-price span{font-size:1rem;font-weight:400;color:var(--t2)}
+.pc-note{font-size:.78rem;color:var(--t3);margin-bottom:24px;font-family:'JetBrains Mono',monospace}
+.pc-includes{font-size:.85rem;color:var(--t2);margin-bottom:20px;line-height:1.7;font-family:'Noto Serif JP',serif;font-weight:300}
+
+/* Final CTA */
+#final-cta{background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(124,58,237,.1),rgba(232,121,249,.06));border-top:1px solid var(--bdr);padding:80px 28px;text-align:center}
+.cta-tit{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:14px;letter-spacing:-.03em}
+.cta-sub{color:var(--t2);font-size:.95rem;margin-bottom:36px;line-height:1.7;font-family:'Noto Serif JP',serif;font-weight:300}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* Related */
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px}
+.rel-card{background:rgba(8,14,28,.7);border:1px solid var(--bdr);border-radius:12px;padding:20px 16px;text-decoration:none;transition:all .25s;display:block}
+.rel-card:hover{border-color:rgba(0,212,255,.2);transform:translateY(-2px)}
+.rel-icon{font-size:1.6rem;display:block;margin-bottom:8px}
+.rel-name{font-size:.83rem;font-weight:600;color:var(--t1);margin-bottom:4px}
+.rel-price{font-size:.72rem;color:var(--t3);font-family:'JetBrains Mono',monospace}
+@media(max-width:560px){.rel-grid{grid-template-columns:1fr 1fr}}
+
+/* Loading skeleton */
+.sk-anim{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.04) 75%);background-size:200%;animation:skload 1.5s infinite}
+@keyframes skload{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel{border-radius:6px;height:20px;margin-bottom:8px}
+
+/* Reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+footer{background:rgba(1,2,5,.98);border-top:1px solid var(--bdr);padding:28px;text-align:center;position:relative;z-index:1}
+footer p{font-size:.76rem;color:var(--t3);font-family:'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+
+<div id="cr"></div>
+<div id="cd"></div>
+
+<nav id="nav">
+  <div class="nav-in">
+    <a href="/" class="nback">スキル一覧へ戻る</a>
+    <span class="n-sep">/</span>
+    <span id="nav-skill-name">読み込み中…</span>
+    <div class="nav-cta">
+      <a href="/app" class="btn btn-p" id="nav-cta-btn">このスキルを追加する</a>
+    </div>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="skill-cat-badge"><span class="skill-cat-dot" id="cat-dot"></span><span id="cat-label">読み込み中</span></div>
+    <span class="skill-icon-wrap" id="skill-icon">⋯</span>
+    <h1 class="skill-name grd" id="skill-name">読み込み中…</h1>
+    <p class="skill-tagline" id="skill-tagline"></p>
+    <div class="hero-meta">
+      <div class="price-chip" id="price-chip">¥—/月</div>
+      <div class="plan-chip" id="plan-chip">— プラン</div>
+    </div>
+    <div class="hero-actions">
+      <a href="/app" class="btn btn-p" style="padding:14px 32px;font-size:1rem">このスキルを追加する &nbsp;→</a>
+      <a href="/app" class="btn btn-g" style="padding:14px 24px;font-size:1rem">無料で試す</a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <!-- Benefits -->
+  <section class="sec rv" id="sec-benefits">
+    <div class="sec-lbl">Benefits</div>
+    <div class="sec-tit">このスキルを追加すると…</div>
+    <p class="sec-sub" id="benefit-sub"></p>
+    <div class="benefits-grid" id="benefits-grid"></div>
+  </section>
+
+  <!-- Capabilities -->
+  <section class="sec rv d1" id="sec-caps">
+    <div class="sec-lbl">Capabilities</div>
+    <div class="sec-tit">できること</div>
+    <p class="sec-sub">このエージェントが実行できる機能の一覧です。</p>
+    <div class="cap-list" id="cap-list"></div>
+  </section>
+
+  <!-- Example Tasks -->
+  <section class="sec rv d2" id="sec-examples">
+    <div class="sec-lbl">Use Cases</div>
+    <div class="sec-tit">こんな指示ができます</div>
+    <p class="sec-sub">実際にAI社長経由でこのエージェントに依頼できるタスク例です。</p>
+    <div class="ex-list" id="ex-list"></div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="sec rv d1" id="sec-price">
+    <div class="sec-lbl">Pricing</div>
+    <div class="sec-tit">料金プラン</div>
+    <p class="sec-sub" style="margin-bottom:32px">このスキルが含まれるプランです。</p>
+    <div class="price-card">
+      <div class="pc-plan" id="pc-plan-name"></div>
+      <div class="pc-price" id="pc-price-amt"></div>
+      <div class="pc-note" id="pc-price-note"></div>
+      <p class="pc-includes" id="pc-includes"></p>
+      <a href="/app" class="btn btn-p" style="width:100%;justify-content:center;padding:14px">無料で始める →</a>
+    </div>
+  </section>
+
+  <!-- Related -->
+  <section class="sec rv d2" id="sec-related">
+    <div class="sec-lbl">Related Skills</div>
+    <div class="sec-tit">あわせて人気のスキル</div>
+    <div class="rel-grid" id="rel-grid"></div>
+  </section>
+
+</div>
+
+<section id="final-cta">
+  <div class="wrap">
+    <h2 class="cta-tit rv"><span class="grd" id="cta-skill-name">このスキル</span>を、<br>今すぐ活かそう。</h2>
+    <p class="cta-sub rv d1" id="cta-sub">AI社長の指揮のもと、このエージェントが24時間あなたの会社のために働きます。</p>
+    <div class="cta-btns rv d2">
+      <a href="/app" class="btn btn-p" style="padding:16px 36px;font-size:1rem">無料アカウントを作成 →</a>
+      <a href="/" class="btn btn-g" style="padding:16px 24px;font-size:1rem">他のスキルを見る</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 AI企業OS · Future Share Collective</p>
+</footer>
+
+<script>
+/* ── Cursor ──────────────────────────────────────── */
+const cr=document.getElementById('cr'),cd=document.getElementById('cd');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY},{passive:true});
+document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>cr.classList.add('h'));el.addEventListener('mouseleave',()=>cr.classList.remove('h'))});
+(function tick(){rx+=(mx-rx)*.14;ry+=(my-ry)*.14;cr.style.left=rx+'px';cr.style.top=ry+'px';cd.style.left=mx+'px';cd.style.top=my+'px';requestAnimationFrame(tick)})();
+
+/* ── Reveal ──────────────────────────────────────── */
+const rvo=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');rvo.unobserve(e.target)}})},{threshold:.07,rootMargin:'0px 0px -32px 0px'});
+document.querySelectorAll('.rv').forEach(el=>rvo.observe(el));
+
+/* ── Category styles ─────────────────────────────── */
+const CAT_ACC={
+  core:'#00d4ff', marketing:'#7c3aed', sales:'#7c3aed',
+  finance:'#f59e0b', strategy:'#00d4ff', legal:'#f59e0b',
+  hr:'#7c3aed', analytics:'#00d4ff', product:'#7c3aed',
+  service:'#00d4ff', creative:'#e879f9', industry:'#f59e0b',
+  general:'#7c3aed'
+};
+const CAT_LABEL={
+  core:'コア', marketing:'マーケティング', sales:'営業', finance:'財務',
+  strategy:'戦略', legal:'法務', hr:'人事', analytics:'データ',
+  product:'プロダクト', service:'CS', creative:'クリエイティブ',
+  industry:'業界専門', general:'汎用'
+};
+const PLAN_LABEL={starter:'Starter', growth:'Growth', business:'Business', enterprise:'Enterprise'};
+const PLAN_INCLUDES={
+  starter:'Starterプラン（¥9,800/月〜）に含まれています。今すぐ登録して、このエージェントをすぐに使い始められます。',
+  growth:'Growthプラン（¥29,800/月〜）で利用可能です。専門スキル5つを自由に選択でき、このスキルを含めることができます。',
+  business:'Businessプラン（¥59,800/月〜）で全スキル無制限に利用可能です。このスキルを含むすべての専門エージェントが使い放題になります。',
+  enterprise:'Enterpriseプラン（要相談）でのみ利用可能です。カスタマイズされた専用エージェントとして構築します。'
+};
+
+/* ── Skill icons (fallback) ──────────────────────── */
+const ICONS={
+  president:'👑', marketing:'📊', sales:'💼', finance:'💰',
+  strategy:'🎯', legal:'⚖️', hr:'👥', analytics:'📈',
+  product:'🛠️', customer_success:'🤝', sns_pr:'📱', design:'🎥',
+  brand_design:'🎨', ux_design:'💻', copywriting:'✍️', video_content:'🎬',
+  architecture_viz:'🏛️', restaurant_ops:'🍽️', manufacturing:'⚙️',
+  medical:'🏥', real_estate:'🏠', ec_specialist:'🛒', strength_discovery:'🔍'
+};
+
+/* ── Per-skill content ───────────────────────────── */
+const COPY={
+  president:{
+    tagline:'24時間稼働するAI経営者。あなたの会社の最高意思決定機関として全部門を指揮統制する。',
+    benefits:[
+      {i:'🔗',t:'全部門を指揮統制',b:'戦略・営業・財務・デザインの全エージェントへリアルタイムに指示を出し、組織全体を最適化する中枢神経として機能します。'},
+      {i:'⚡',t:'瞬時の意思決定',b:'感情なし、忖度なし。市場データ・財務情報・競合動向を統合し、最適な経営判断を瞬時に下します。'},
+      {i:'🌙',t:'24時間365日稼働',b:'深夜でも休日でも、あなたの会社は前進し続けます。機会損失ゼロの経営体制を実現。'},
+      {i:'💰',t:'役員コスト1/100以下',b:'優秀な役員を雇うコストの1/100以下で、最高性能AIによる経営判断を毎日受けられます。'},
+    ]
+  },
+  marketing:{
+    tagline:'顧客獲得から認知拡大まで。マーケティング全戦略をAIが担い、限られたリソースで最大の成果を出す。',
+    benefits:[
+      {i:'🎯',t:'ターゲット顧客を精密に特定',b:'ペルソナ設計・カスタマージャーニーマップ・市場セグメント分析を瞬時に完成。勘ではなくデータで顧客を捉えます。'},
+      {i:'📊',t:'統合マーケティング戦略を即立案',b:'SNS・コンテンツ・広告・PR・イベントを横断した統合計画を自動生成。チャネルごとの優先順位まで明示します。'},
+      {i:'🚀',t:'競合に勝つポジショニング発見',b:'競合他社を徹底分析し、あなたの会社だけが占めるべきユニークな市場ポジションを特定します。'},
+      {i:'💡',t:'ROI最大化の施策選定',b:'限られたマーケティング予算で最大の成果を出すため、投資対効果の高い施策を優先順位付きで提示します。'},
+    ]
+  },
+  sales:{
+    tagline:'売上を生み出すプロセスを設計・最適化する。商談成功率と新規開拓速度を同時に上げる営業専門エージェント。',
+    benefits:[
+      {i:'📋',t:'営業戦略を体系化',b:'ターゲット企業の選定からアプローチ・提案・クロージングまで、再現性のある営業プロセスを設計します。'},
+      {i:'💬',t:'商談成功率を向上',b:'顧客の課題・ニーズ・購買心理を分析し、刺さる提案書・トークスクリプト・メール文面を即生成します。'},
+      {i:'📈',t:'パイプライン管理の最適化',b:'見込み顧客の優先順位付け・フォローアップタイミング・失注分析まで、営業活動全体を効率化します。'},
+      {i:'🌐',t:'新規開拓の自動設計',b:'ターゲット業界・企業規模・意思決定者へのアプローチ戦略を自動で設計し、新規営業の立ち上げを加速します。'},
+    ]
+  },
+  finance:{
+    tagline:'キャッシュフローの最適化から投資判断まで。財務の知性があなたの会社を健全に成長させる。',
+    benefits:[
+      {i:'📊',t:'財務健全性をリアルタイム把握',b:'損益・キャッシュフロー・貸借対照表を常時分析し、財務リスクを早期発見。手遅れになる前に警告します。'},
+      {i:'🏦',t:'資金調達・投資戦略の立案',b:'VC・銀行融資・補助金活用まで、あなたの会社の状況に最適な資金調達方法を提案します。'},
+      {i:'✂️',t:'コスト削減機会の特定',b:'固定費・変動費・機会コストを多角的に分析し、利益率を上げるコスト最適化プランを提示します。'},
+      {i:'📐',t:'財務モデリングと将来予測',b:'複数シナリオの財務シミュレーションを即生成。意思決定に必要な数字の根拠を明確化します。'},
+    ]
+  },
+  strategy:{
+    tagline:'3年後の競争優位を設計する。経営戦略の立案と実行計画でビジネスの未来を切り開く。',
+    benefits:[
+      {i:'🔭',t:'競合優位性の発見と強化',b:'業界構造・競合他社・代替品・新規参入リスクをフレームワーク分析し、持続可能な競争優位の源泉を特定します。'},
+      {i:'💡',t:'新規事業の機会を発掘',b:'市場トレンド・顧客ニーズ・技術動向から新規事業アイデアを生成し、事業化の優先順位と実現可能性を評価します。'},
+      {i:'🗺️',t:'中長期経営計画の策定',b:'ビジョン・ミッション・KPIを体系化し、3〜5年の実行可能なロードマップを作成。社員への浸透計画も含みます。'},
+      {i:'🔄',t:'戦略の定期的な見直し',b:'市場環境の変化に応じて戦略を継続的にアップデート。静的な計画書ではなく生きた戦略を提供します。'},
+    ]
+  },
+  legal:{
+    tagline:'法的リスクから会社を守る。コンプライアンスを経営の武器にする法務専門エージェント。',
+    benefits:[
+      {i:'📄',t:'契約書レビューと修正提案',b:'取引契約・業務委託・NDAなど、リスクのある条項を特定し修正案を提示。弁護士費用を大幅に削減します。'},
+      {i:'🛡️',t:'法規制への対応アドバイス',b:'個人情報保護・特定商取引法・労働法・業界特有規制など、事業に関わる法律リスクを事前に把握できます。'},
+      {i:'📋',t:'コンプライアンス体制の構築',b:'社内規程・ポリシー・研修プログラムの設計まで。「知らなかった」では済まないリスクを組織で管理します。'},
+      {i:'⚡',t:'紛争・クレーム対応の初動設計',b:'トラブル発生時の対応フロー・証拠保全・交渉戦略を即座に設計。初動の遅れが損失を拡大させません。'},
+    ]
+  },
+  hr:{
+    tagline:'採用から組織文化まで。人と組織の可能性を最大化し、優秀な人材が集まる会社を作る。',
+    benefits:[
+      {i:'🔍',t:'採用戦略と求人の最適化',b:'採用要件の定義・求人票の作成・選考基準の設計まで。優秀な人材が集まる採用プロセスを構築します。'},
+      {i:'🌱',t:'組織文化と従業員体験の設計',b:'エンゲージメント向上・離職防止・オンボーディングプログラムを設計し、人材が活躍できる環境を作ります。'},
+      {i:'⚖️',t:'評価制度・給与体系の構築',b:'公平で透明性の高い人事評価制度と報酬体系を設計。社員のモチベーションと会社の成長を両立させます。'},
+      {i:'🔔',t:'組織課題の診断と解決策提案',b:'コミュニケーション不全・属人化・燃え尽き症候群など、組織内の問題を早期発見し解決策を提示します。'},
+    ]
+  },
+  analytics:{
+    tagline:'データの海から、経営判断に直結するインサイトを発掘する。数字で経営を可視化・高速化する。',
+    benefits:[
+      {i:'📐',t:'KPI設計と効果測定',b:'事業目標から逆算したKPI・KGIを設計し、何を・どう計測するかの基盤を整備。数字で経営を可視化します。'},
+      {i:'👤',t:'顧客行動の深層分析',b:'購買データ・閲覧履歴・NPS・解約率など多様なデータから顧客の本音と行動パターンを解読します。'},
+      {i:'📡',t:'市場トレンドの先読み',b:'業界データ・マクロ経済・競合動向を統合分析し、先手を打てるビジネスチャンスを発見します。'},
+      {i:'🧪',t:'A/Bテストと施策検証',b:'仮説設定から検証設計・結果解釈まで。勘ではなくデータで施策の有効性を判断し、PDCAを加速します。'},
+    ]
+  },
+  product:{
+    tagline:'ユーザーが本当に欲しいものを最速で届ける。プロダクトロードマップから仕様書まで即生成。',
+    benefits:[
+      {i:'🗓️',t:'プロダクトロードマップの最適化',b:'機能の優先順位をRICEスコア・ユーザーニーズ・ビジネス価値から多角的に評価。何を作るべきかを明確化します。'},
+      {i:'🎯',t:'PMF（製品市場適合）の加速',b:'ターゲットユーザーの課題を深掘りし、MVPの設計から検証計画まで。市場に刺さるプロダクトへの最短ルートを提示します。'},
+      {i:'📝',t:'機能仕様書・PRDの自動生成',b:'エンジニアが開発に着手できる詳細な仕様書を即生成。認識のズレによる手戻りコストをゼロにします。'},
+      {i:'🔬',t:'ユーザーリサーチの設計と分析',b:'インタビュー設計・アンケート分析・行動ログ解釈まで。ユーザーの本音を拾い上げ、プロダクトに反映します。'},
+    ]
+  },
+  customer_success:{
+    tagline:'顧客の成功がビジネスの成功。解約率ゼロとLTV最大化を同時に実現するCSエージェント。',
+    benefits:[
+      {i:'🔔',t:'解約リスクの早期検知',b:'顧客の利用状況・NPS・サポート頻度から解約の予兆を検知し、先手を打ったフォローアップ計画を立案します。'},
+      {i:'🚀',t:'オンボーディングの成功率向上',b:'新規顧客が早期に価値を実感できるオンボーディングフローを設計。初期離脱を防ぎ、顧客の習慣化を加速します。'},
+      {i:'💎',t:'アップセル・クロスセル機会の発見',b:'顧客の利用パターン・課題・成長フェーズを分析し、追加提案の最適なタイミングと内容を特定します。'},
+      {i:'📚',t:'顧客成功事例の体系化',b:'成功事例を再現可能なフレームワークに落とし込み、チーム全体のCS品質を標準化・向上させます。'},
+    ]
+  },
+  sns_pr:{
+    tagline:'SNSで話題を作り、ブランドを育てる。フォロワーをファンに変えるデジタルPR専門家。',
+    benefits:[
+      {i:'🔥',t:'バズるコンテンツ戦略の立案',b:'各SNSプラットフォームのアルゴリズム・トレンド・ターゲット層を分析し、拡散される投稿の型と戦略を提供します。'},
+      {i:'🎭',t:'ブランドボイスの確立',b:'企業のミッション・ターゲット・トーン&マナーを反映した一貫したSNSキャラクターを設計。ファンが生まれる個性を作ります。'},
+      {i:'🛡️',t:'炎上・クライシス対応の事前設計',b:'リスクのある投稿パターンを事前に特定し、炎上時の対応フローとメッセージを準備。ブランド毀損を最小化します。'},
+      {i:'🤝',t:'インフルエンサー・PR戦略',b:'自社ターゲットに最適なインフルエンサー選定基準・協業提案・効果測定方法を体系的に設計します。'},
+    ]
+  },
+  design:{
+    tagline:'デジタル映像・モーショングラフィックス・UIビジュアル。他社に負けないデザイン性を実現する唯一無二のクリエイティブ戦略。',
+    benefits:[
+      {i:'🎬',t:'デジタル映像・モーション制作の方向性設計',b:'プロモーション動画・SNSリール・ロゴアニメーションの構成コンテ・スタイルガイド・技術仕様を作成。制作会社への発注精度が劇的に向上します。'},
+      {i:'🎨',t:'ブランドビジュアルアイデンティティの確立',b:'カラーパレット・タイポグラフィ・デザインシステムを一から構築。一目でわかるブランドの個性を視覚化します。'},
+      {i:'💻',t:'競合に勝つUIビジュアルの方向性提案',b:'グラスモーフィズム・ネオン・ミニマルなど最先端スタイルを取り込み、ターゲットに刺さるUI美学を提案します。'},
+      {i:'📱',t:'SNS・広告クリエイティブの量産戦略',b:'バナー・サムネイル・ストーリーズの制作テンプレートとガイドラインを設計。デザイナー不要でも一貫したクオリティを維持できます。'},
+    ]
+  },
+  brand_design:{
+    tagline:'ブランドを資産に変える。競合が真似できないビジュアルアイデンティティを戦略的に構築する。',
+    benefits:[
+      {i:'🏛️',t:'ブランド戦略の体系化',b:'ブランドビジョン・ミッション・バリュー・パーソナリティを言語化。全社員が体現できるブランドの核を作ります。'},
+      {i:'🎨',t:'視覚的アイデンティティの構築',b:'ロゴ・カラー・フォント・イラストスタイルを統合したブランドブックを作成。どのタッチポイントでも一貫した印象を与えます。'},
+      {i:'🔭',t:'競合差別化のデザイン戦略',b:'業界の視覚的慣習を分析し、競合と明確に差別化されるデザインポジションを特定。記憶に残るブランドを設計します。'},
+      {i:'📱',t:'ブランド浸透・展開計画',b:'名刺・Web・SNS・パッケージ・空間まで、ブランドをあらゆるメディアに展開するための実装ガイドを提供します。'},
+    ]
+  },
+  ux_design:{
+    tagline:'ユーザーが「また使いたい」と感じるUXを設計する。コンバージョン率と顧客満足を同時に最大化。',
+    benefits:[
+      {i:'🗺️',t:'ユーザー体験の全プロセス設計',b:'ユーザーリサーチ・ペルソナ・カスタマージャーニー・情報アーキテクチャ・ワイヤーフレームまで、UX設計の全工程を網羅します。'},
+      {i:'📈',t:'コンバージョン率の最大化',b:'離脱ポイント・摩擦の発生箇所・認知負荷を分析し、ユーザーが自然にゴールへ進める導線を設計します。'},
+      {i:'♿',t:'アクセシビリティと包摂性の確保',b:'WCAG準拠・高齢者・多様なデバイス対応を考慮したインクルーシブデザイン方針を策定。より広いユーザー層を獲得します。'},
+      {i:'🧪',t:'プロトタイプとユーザーテスト設計',b:'テスト計画・シナリオ・評価指標を設計し、リリース前に問題を発見して修正。開発後の大幅修正コストをゼロにします。'},
+    ]
+  },
+  copywriting:{
+    tagline:'読んだ人が動きたくなる言葉を生み出す。LP・メール・SNSのコンバージョンを構造的に上げる。',
+    benefits:[
+      {i:'🚀',t:'LP・セールスコピーの転換率向上',b:'ターゲットの心理・購買障壁・感情トリガーを分析し、読んだ人が行動したくなるランディングページ文章を設計します。'},
+      {i:'📧',t:'メール・DM開封率と反応率向上',b:'件名・導入・CTAの最適化で、開封率・クリック率・返信率を劇的に改善するメールマーケティングコピーを作成します。'},
+      {i:'🎭',t:'ブランドトーン&マナーの言語化',b:'会社の個性・価値観・ターゲット層に合った「声」を言語化。誰が書いても一貫したブランドコミュニケーションを実現します。'},
+      {i:'🔍',t:'SEOコンテンツ戦略と記事設計',b:'検索ニーズを捉えたキーワード戦略と、読者が最後まで読むコンテンツ構造を設計。集客と転換を両立させます。'},
+    ]
+  },
+  video_content:{
+    tagline:'動画コンテンツで認知を爆発させる。視聴を購買に変える動画戦略を一元設計する。',
+    benefits:[
+      {i:'📺',t:'動画コンテンツ戦略の全体設計',b:'YouTube・TikTok・Reels・LP動画など媒体ごとの最適な動画戦略を一元設計。視聴者を顧客へ転換するファネルを構築します。'},
+      {i:'✨',t:'バズる動画の構成・脚本設計',b:'最初の3秒で離脱を防ぎ、最後まで見せ、行動させる動画構成のノウハウを提供。企画から絵コンテまで制作をサポートします。'},
+      {i:'🔍',t:'SEO・アルゴリズム最適化',b:'タイトル・サムネイル・説明文・タグ戦略を最適化し、アルゴリズムに選ばれる動画チャンネルを設計します。'},
+      {i:'🎯',t:'動画制作チームの編成と品質管理',b:'撮影・編集・ナレーション・音楽の外注先選定基準と品質チェックポイントを設計。一貫した動画クオリティを維持します。'},
+    ]
+  },
+  architecture_viz:{
+    tagline:'建築の魅力をプレゼンで伝え切る。受注率を変えるビジュアライゼーション戦略家。',
+    benefits:[
+      {i:'🏆',t:'コンペ・提案勝率の向上',b:'施主の潜在的な期待・不安・意思決定基準を分析し、刺さるプレゼンテーション構成と訴求軸を特定。受注率を劇的に改善します。'},
+      {i:'📖',t:'設計コンセプトの言語化・ストーリー化',b:'建築家の思想・デザイン意図・社会的文脈を非専門家にも伝わる言葉とストーリーで表現。施主の感動と信頼を生みます。'},
+      {i:'🖥️',t:'ビジュアライゼーション戦略の設計',b:'CG・模型・VR・図面の組み合わせ方と演出順序を設計。視覚的な没入体験でプロジェクトへの共感を最大化します。'},
+      {i:'🌟',t:'建築ブランディングと実績発信戦略',b:'施工事例の発信方法・メディア掲載・建築賞応募戦略を設計。事務所のブランドを高め、優良案件を引き寄せます。'},
+    ]
+  },
+  restaurant_ops:{
+    tagline:'飲食店の収益構造を根本から変える。FL比率・集客・リピーターを同時に最適化する。',
+    benefits:[
+      {i:'📊',t:'FL比率・原価率の最適化',b:'食材原価・人件費・廃棄ロスを多角的に分析し、利益率を改善する具体的な数値目標とアクションプランを提示します。'},
+      {i:'🍽️',t:'メニュー設計と客単価向上',b:'利益率の高いメニューの特定・プライシング戦略・心理的メニュー設計（メニューエンジニアリング）で客単価を引き上げます。'},
+      {i:'📱',t:'集客・リピーター獲得戦略',b:'グルメサイト最適化・SNS集客・LINE活用・口コミ戦略を統合した集客プランで、新規&リピート客を確保します。'},
+      {i:'👨‍🍳',t:'スタッフ教育と店舗オペレーション改善',b:'マニュアル作成・研修設計・シフト管理・QSC評価基準を体系化し、人が変わっても品質を維持する仕組みを構築します。'},
+    ]
+  },
+  manufacturing:{
+    tagline:'職人の技と経営の知恵を融合させる。製造業・伝統工芸の価値を正当に評価される事業へ変革。',
+    benefits:[
+      {i:'💹',t:'製造原価の削減と利益率改善',b:'材料費・加工費・管理費・物流コストを分解分析し、無駄を見つけてコスト構造を最適化。価格競争力を取り戻します。'},
+      {i:'🏆',t:'職人技術のブランド価値化',b:'「良いものを作れば売れる」から卒業。技術・こだわり・ストーリーをブランド資産に変え、適正価格で売れる仕組みを構築します。'},
+      {i:'📅',t:'受注体制と生産計画の最適化',b:'波動の大きい受注に対応できる柔軟な生産体制の設計と、収益を安定させるリテイナー契約モデルの導入支援を行います。'},
+      {i:'🔑',t:'後継者・技術継承の仕組み化',b:'暗黙知の見える化・OJT設計・技術マニュアル作成。職人技術を組織の資産として次世代へ伝える仕組みを構築します。'},
+    ]
+  },
+  medical:{
+    tagline:'医療・介護現場の課題を経営視点で解決する。患者満足と経営安定を同時に実現する。',
+    benefits:[
+      {i:'❤️',t:'患者・利用者満足度の向上',b:'患者体験の可視化・待ち時間改善・コミュニケーション設計で、口コミと紹介患者を増やす患者満足向上プランを作成します。'},
+      {i:'💴',t:'診療報酬・介護報酬の最適請求',b:'算定漏れ・査定リスク・加算取得機会を分析し、適切な報酬請求と収益最大化を実現。コンプライアンスも確保します。'},
+      {i:'📋',t:'医療法対応の経営戦略',b:'広告規制・個人情報保護・医療法の制約の中で、合法的に患者を獲得し、地域に選ばれる医療機関になる戦略を設計します。'},
+      {i:'👩‍⚕️',t:'スタッフ採用・定着率の改善',b:'看護師・介護士・医療事務の採用難を解消するための採用戦略と、離職率を下げる職場環境改善プランを提供します。'},
+    ]
+  },
+  real_estate:{
+    tagline:'不動産の価値を最大化する。物件力より集客力で差をつけるデジタルマーケティング戦略。',
+    benefits:[
+      {i:'✍️',t:'物件・エリアの魅力の言語化',b:'立地・設備・生活利便性・ライフスタイル提案まで、ターゲット層の心理に刺さる物件訴求軸を発掘し言葉にします。'},
+      {i:'📱',t:'デジタルマーケティングで問い合わせ増加',b:'ポータル最適化・SEO・SNS・動画活用まで統合したデジタル集客戦略を構築。問い合わせ数を底上げします。'},
+      {i:'🤝',t:'売主・地主開拓の戦略設計',b:'相続案件・遊休地・売却検討者へのアプローチ方法を体系化。競合より先に優良案件を掴む仕組みを構築します。'},
+      {i:'🏙️',t:'ブランド構築と紹介ネットワーク強化',b:'地域密着ブランドの確立と、弁護士・税理士・FPなどの士業連携を含む紹介ネットワーク構築戦略を設計します。'},
+    ]
+  },
+  ec_specialist:{
+    tagline:'ECの売上を構造的に伸ばす。集客から購買・リピートまでの全プロセスを最適化する。',
+    benefits:[
+      {i:'📈',t:'EC転換率（CVR）の改善',b:'商品ページ・カート・決済フローの改善点を特定し、訪問者が購入者へ転換する最適な導線を設計。売上を倍増させます。'},
+      {i:'🏪',t:'モール最適化と自社EC戦略',b:'Amazon・楽天・Yahoo!の最適化と、自社EC育成の両立戦略を設計。プラットフォーム依存リスクを下げながら成長します。'},
+      {i:'🔄',t:'LTV最大化のリピート施策',b:'メルマガ・LINE・定期購入・ポイント施策を組み合わせたリピート購入の仕組みを構築。新規獲得コストを回収します。'},
+      {i:'📦',t:'商品ラインナップと在庫戦略',b:'売れ筋・死に筋の分析から、粗利最大化の品揃え最適化と在庫回転率改善プランを提示。資金繰りを安定化します。'},
+    ]
+  },
+  strength_discovery:{
+    tagline:'あなたの会社の「唯一無二の強み」を発見する。競合が絶対に真似できない事業の核心を言語化する。',
+    benefits:[
+      {i:'💎',t:'他社が真似できない強みの発見',b:'創業ストーリー・技術・人・文化・顧客関係など、財務諸表に現れない無形資産を掘り起こし、競争優位の源泉を特定します。'},
+      {i:'💼',t:'強みをビジネスモデルに変換',b:'発見した強みを収益化する事業モデルと、顧客に伝えるメッセージに落とし込みます。「良いものが売れる」仕組みを作ります。'},
+      {i:'🌟',t:'採用・ブランディングへの活用',b:'会社の強みを言語化することで、共感する人材が集まり顧客ロイヤリティが高まる。内外に伝わる会社の物語を作ります。'},
+      {i:'🔗',t:'AI社長への戦略インプット',b:'発見した強みをAI社長と全エージェントが共有することで、あらゆるタスクが会社の強みを活かした方向性で実行されます。'},
+    ]
+  },
+};
+
+/* ── Related skill suggestions ───────────────────── */
+const RELATED={
+  president:['strategy','analytics','strength_discovery'],
+  marketing:['sns_pr','copywriting','analytics'],
+  sales:['marketing','customer_success','strategy'],
+  finance:['analytics','strategy','legal'],
+  strategy:['analytics','president','finance'],
+  legal:['hr','finance','strategy'],
+  hr:['legal','analytics','strategy'],
+  analytics:['strategy','marketing','finance'],
+  product:['ux_design','analytics','marketing'],
+  customer_success:['sales','analytics','marketing'],
+  sns_pr:['marketing','copywriting','video_content'],
+  design:['brand_design','ux_design','video_content'],
+  brand_design:['design','copywriting','marketing'],
+  ux_design:['design','product','analytics'],
+  copywriting:['marketing','sns_pr','brand_design'],
+  video_content:['sns_pr','copywriting','design'],
+  architecture_viz:['brand_design','copywriting','design'],
+  restaurant_ops:['marketing','sns_pr','analytics'],
+  manufacturing:['strategy','brand_design','sales'],
+  medical:['analytics','hr','legal'],
+  real_estate:['marketing','copywriting','sns_pr'],
+  ec_specialist:['analytics','marketing','copywriting'],
+  strength_discovery:['strategy','brand_design','president'],
+};
+
+const ALL_SKILLS_META={
+  president:{name:'AI社長',icon:'👑',price:'必須',cat:'core'},
+  marketing:{name:'マーケティング',icon:'📊',price:'included',cat:'marketing'},
+  sales:{name:'営業専門',icon:'💼',price:'¥2,980/月',cat:'sales'},
+  finance:{name:'財務分析',icon:'💰',price:'¥2,980/月',cat:'finance'},
+  strategy:{name:'経営戦略',icon:'🎯',price:'¥4,980/月',cat:'strategy'},
+  legal:{name:'法務・コンプラ',icon:'⚖️',price:'¥4,980/月',cat:'legal'},
+  hr:{name:'人事・組織',icon:'👥',price:'¥2,980/月',cat:'hr'},
+  analytics:{name:'データ分析',icon:'📈',price:'¥2,980/月',cat:'analytics'},
+  product:{name:'プロダクト開発',icon:'🛠️',price:'¥2,980/月',cat:'product'},
+  customer_success:{name:'カスタマーサクセス',icon:'🤝',price:'¥2,980/月',cat:'service'},
+  sns_pr:{name:'SNS専門広報',icon:'📱',price:'included',cat:'marketing'},
+  design:{name:'デジタルビジュアル',icon:'🎥',price:'¥4,980/月',cat:'creative'},
+  brand_design:{name:'ブランドデザイン',icon:'🎨',price:'¥9,800/月',cat:'creative'},
+  ux_design:{name:'UI/UXスペシャリスト',icon:'💻',price:'¥9,800/月',cat:'creative'},
+  copywriting:{name:'コピーライター',icon:'✍️',price:'¥4,980/月',cat:'creative'},
+  video_content:{name:'動画コンテンツ',icon:'🎬',price:'¥4,980/月',cat:'creative'},
+  architecture_viz:{name:'建築プレゼン',icon:'🏛️',price:'¥9,800/月',cat:'industry'},
+  restaurant_ops:{name:'飲食コンサル',icon:'🍽️',price:'¥4,980/月',cat:'industry'},
+  manufacturing:{name:'製造業・職人',icon:'⚙️',price:'¥9,800/月',cat:'industry'},
+  medical:{name:'医療・介護',icon:'🏥',price:'¥9,800/月',cat:'industry'},
+  real_estate:{name:'不動産マーケ',icon:'🏠',price:'¥9,800/月',cat:'industry'},
+  ec_specialist:{name:'EC・通販専門',icon:'🛒',price:'¥4,980/月',cat:'industry'},
+  strength_discovery:{name:'強み発見',icon:'🔍',price:'無料',cat:'core'},
+};
+
+/* ── Main render ─────────────────────────────────── */
+async function init(){
+  const id=new URLSearchParams(location.search).get('id')||'president';
+
+  /* fetch from API */
+  let skill=null;
+  try{
+    const r=await fetch(`/v1/skills/${id}`);
+    if(r.ok) skill=await r.json();
+  }catch(e){}
+
+  /* fallback to meta */
+  if(!skill){
+    const m=ALL_SKILLS_META[id];
+    if(!m){location.href='/';return}
+    skill={role_id:id,display_name:m.name,category:m.cat,monthly_price_jpy:0,plan_required:'starter',capabilities:[],example_tasks:[],preview_text:'',is_mandatory:false};
+  }
+
+  const copy=COPY[id]||{tagline:'',benefits:[]};
+  const acc=CAT_ACC[skill.category]||'#00d4ff';
+
+  /* apply accent color */
+  document.documentElement.style.setProperty('--acc',acc);
+
+  /* NAV */
+  document.getElementById('nav-skill-name').textContent=skill.display_name;
+  document.title=`${skill.display_name} — AI企業OS`;
+
+  /* HERO */
+  document.getElementById('cat-dot').style.background=acc;
+  document.getElementById('cat-label').textContent=CAT_LABEL[skill.category]||skill.category;
+  document.getElementById('skill-icon').textContent=ICONS[id]||'⭐';
+  document.getElementById('skill-icon').style.filter=`drop-shadow(0 0 24px ${acc}55)`;
+  document.getElementById('skill-name').textContent=skill.display_name;
+  document.getElementById('skill-tagline').textContent=copy.tagline||skill.preview_text||skill.description;
+
+  const price=skill.monthly_price_jpy>0?`¥${skill.monthly_price_jpy.toLocaleString()}/月`:skill.is_mandatory?'必須（無料）':'included';
+  document.getElementById('price-chip').textContent=price;
+  document.getElementById('plan-chip').textContent=`${PLAN_LABEL[skill.plan_required]||'Starter'}プラン〜`;
+
+  /* CTA link */
+  document.querySelectorAll('[href="/app"]').forEach(a=>{a.href=`/app#skill-${id}`});
+
+  /* BENEFITS */
+  document.getElementById('benefit-sub').textContent=`${skill.display_name}を追加すると、AI社長を通じてこれらの専門タスクが即実行できるようになります。`;
+  const bg=document.getElementById('benefits-grid');
+  bg.innerHTML='';
+  (copy.benefits||[]).forEach(b=>{
+    bg.innerHTML+=`<div class="bcard rv"><span class="b-icon">${b.i}</span><div class="b-title">${b.t}</div><p class="b-body">${b.b}</p></div>`;
+  });
+  bg.querySelectorAll('.rv').forEach(el=>rvo.observe(el));
+
+  /* CAPABILITIES */
+  const cl=document.getElementById('cap-list');
+  cl.innerHTML='';
+  if(skill.capabilities&&skill.capabilities.length){
+    skill.capabilities.forEach(c=>{
+      cl.innerHTML+=`<div class="cap-item rv"><span class="cap-check">✓</span><span class="cap-text">${c.replace(/_/g,' ')}</span></div>`;
+    });
+  } else {
+    document.getElementById('sec-caps').style.display='none';
+  }
+  cl.querySelectorAll('.rv').forEach(el=>rvo.observe(el));
+
+  /* EXAMPLE TASKS */
+  const el2=document.getElementById('ex-list');
+  el2.innerHTML='';
+  if(skill.example_tasks&&skill.example_tasks.length){
+    skill.example_tasks.forEach((t,i)=>{
+      el2.innerHTML+=`<div class="ex-item rv"><span class="ex-num">例 ${String(i+1).padStart(2,'0')}</span><span class="ex-text">${t}</span></div>`;
+    });
+  } else {
+    document.getElementById('sec-examples').style.display='none';
+  }
+  el2.querySelectorAll('.rv').forEach(ev=>rvo.observe(ev));
+
+  /* PRICING */
+  const plan=skill.plan_required||'starter';
+  document.getElementById('pc-plan-name').textContent=`${PLAN_LABEL[plan]||'Starter'}プラン以上`;
+  const priceAmt=skill.monthly_price_jpy>0?`¥${skill.monthly_price_jpy.toLocaleString()}<span>/月（アドオン）</span>`:skill.is_mandatory?`<span style="font-size:1.4rem">必須スキル（無料）</span>`:`<span style="font-size:1.4rem">プランに含まれる</span>`;
+  document.getElementById('pc-price-amt').innerHTML=priceAmt;
+  document.getElementById('pc-price-note').textContent=skill.monthly_price_jpy>0?`税込 ¥${Math.round(skill.monthly_price_jpy*1.1).toLocaleString()}`:'プラン月額に含まれます';
+  document.getElementById('pc-includes').textContent=PLAN_INCLUDES[plan]||'';
+
+  /* RELATED */
+  const rels=RELATED[id]||[];
+  const rg=document.getElementById('rel-grid');
+  rg.innerHTML='';
+  rels.slice(0,3).forEach(rid=>{
+    const m=ALL_SKILLS_META[rid];
+    if(!m)return;
+    rg.innerHTML+=`<a href="/skill?id=${rid}" class="rel-card rv"><span class="rel-icon">${m.icon}</span><div class="rel-name">${m.name}</div><div class="rel-price">${m.price}</div></a>`;
+  });
+  rg.querySelectorAll('.rv').forEach(el=>rvo.observe(el));
+
+  /* CTA skill name */
+  document.getElementById('cta-skill-name').textContent=skill.display_name;
+  document.getElementById('cta-sub').textContent=`${skill.display_name}をAI社長チームに加えることで、専門的な知識と実行力が24時間あなたの会社に宿ります。`;
+
+  /* re-observe all new rv elements */
+  document.querySelectorAll('.rv:not(.on)').forEach(el=>rvo.observe(el));
+}
+
+init();
+</script>
+</body>
+</html>

@@ -13,3 +13,8 @@ async def root() -> HTMLResponse:
 async def app_ui() -> HTMLResponse:
     html = (Path(__file__).parent / "static" / "index.html").read_text(encoding="utf-8")
     return HTMLResponse(content=html)
+
+@app.get("/skill", response_class=HTMLResponse)
+async def skill_page() -> HTMLResponse:
+    html = (Path(__file__).parent / "static" / "skill.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html)
