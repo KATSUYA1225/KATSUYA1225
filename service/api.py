@@ -230,7 +230,13 @@ async def get_usage(company_id: str, month: str | None = None) -> UsageResponse:
 
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
-async def index() -> HTMLResponse:
+async def landing() -> HTMLResponse:
+    html = (Path(__file__).parent.parent / "static" / "landing.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html)
+
+
+@app.get("/app", response_class=HTMLResponse, include_in_schema=False)
+async def app_ui() -> HTMLResponse:
     html = (Path(__file__).parent.parent / "static" / "index.html").read_text(encoding="utf-8")
     return HTMLResponse(content=html)
 
