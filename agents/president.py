@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,10 @@ import anthropic
 from .company_config import CompanyConfig
 from .employee_agents import create_employee_from_skill
 from .skill_registry import SkillRegistry
+
+_MOCK_AI    = os.environ.get("MOCK_AI",    "").lower() in ("1", "true", "yes")
+_HAIKU_MODE = os.environ.get("HAIKU_MODE", "").lower() in ("1", "true", "yes")
+_HAIKU_MODEL = "claude-haiku-4-5-20251001"
 
 # JPY/1K tokens（usage_tracker.RATES と同期）
 _RATES: dict[str, dict[str, float]] = {
@@ -41,7 +46,8 @@ class PresidentAgent:
         self._logger = logging.getLogger(f"president.{company_config.company_id}")
 
         pres = registry.get_skill("president")
-        self._model = company_config.model_overrides.get("president", pres.model)
+        base_model = company_config.model_overrides.get("president", pres.model)
+        self._model = _HAIKU_MODEL if _HAIKU_MODE else base_model
         self._max_tokens = company_config.token_overrides.get("president", pres.max_tokens)
         self._max_loops = pres.max_delegation_loops
         self._system_prompt = pres.render_system_prompt(company_config)
@@ -115,8 +121,39 @@ class PresidentAgent:
         )
         self._logger.info(f"ログ保存: {log_path}")
 
+    def _mock_run(self, task: str) -> str:
+        short = task[:80] + ("..." if len(task) > 80 else "")
+        dept_names = [
+            self.registry.get_skill(rid).display_name
+            for rid in self.company.active_skill_ids
+            if rid != "president"
+        ]
+        delegations = "\n".join(f"- **{d}** に分析・実行を指示" for d in dept_names[:4])
+        return (
+            f"## 社長決裁レポート（モック）\n\n"
+            f"**タスク:** {short}\n\n"
+            f"### 各部門への指示\n{delegations}\n\n"
+            "### 統合判断\n"
+            "各部門の報告を統合した結果、以下の戦略方針を決定します。\n\n"
+            "1. **最優先**: 収益に直結する施策を30日以内に実行\n"
+            "2. **体制整備**: 人材・プロセスの見直しを並行して推進\n"
+            "3. **中長期**: ブランド・顧客基盤の拡充で持続的成長を実現\n\n"
+            "### 経営指標目標\n"
+            "| 指標 | 現状 | 3ヶ月後目標 |\n"
+            "|------|------|------------|\n"
+            "| 売上成長率 | ベースライン | +20% |\n"
+            "| 顧客獲得コスト | ベースライン | -15% |\n"
+            "| NPS | ベースライン | +10pt |\n\n"
+            "> ⚠️ これはMOCK_AI=trueによるモックレスポンスです。実際のAI分析ではありません。"
+        )
+
     async def run(self, task: str) -> str:
         self._logger.info(f"[{self.company.company_name} 社長] タスク受信: {task}")
+
+        if _MOCK_AI:
+            result = self._mock_run(task)
+            self._save_log(task, [], result)
+            return result
 
         messages: list[dict[str, Any]] = [{"role": "user", "content": task}]
         final_text = ""
