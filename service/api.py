@@ -29,7 +29,7 @@ from service.models import (
 )
 from service.usage_tracker import UsageTracker
 from service import stream as stream_module
-from service.company_store import load_dna, save_dna, dna_to_context
+from service.company_store import load_dna, save_dna, dna_to_context, list_companies, list_task_log
 
 load_dotenv()
 
@@ -182,6 +182,12 @@ async def submit_task(req: TaskRequest) -> TaskResponse:
     )
 
 
+@app.get("/v1/tasks/recent", summary="タスク実行履歴（ログファイル）")
+async def recent_tasks_log(company_id: str | None = None, limit: int = 50) -> dict:
+    tasks = list_task_log(company_id=company_id, limit=limit)
+    return {"tasks": tasks, "total": len(tasks)}
+
+
 @app.get("/v1/tasks/{task_id}", response_model=TaskStatusResponse, summary="タスク結果取得")
 async def get_task(task_id: str) -> TaskStatusResponse:
     data = _tasks_store.get(task_id) or await tracker.get_task(task_id)
@@ -219,9 +225,15 @@ async def index() -> HTMLResponse:
     return HTMLResponse(content=html)
 
 
-@app.get("/v1/companies/presets", summary="YAMLで定義済みの企業一覧")
+@app.get("/v1/companies/presets", summary="企業一覧（YAML + DNA登録済み）")
 async def list_presets() -> dict:
-    return {"presets": stream_module.list_presets()}
+    yaml_presets = {p["id"]: p for p in stream_module.list_presets()}
+    dna_companies = {c["id"]: c for c in list_companies()}
+    # YAMLが優先、なければDNA企業を追加
+    merged = {**dna_companies, **yaml_presets}
+    return {"presets": list(merged.values())}
+
+
 
 
 @app.get("/v1/stream", summary="タスク実行（SSEストリーミング）")

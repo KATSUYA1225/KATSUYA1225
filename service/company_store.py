@@ -1,12 +1,14 @@
-"""企業DNA保存・取得 — data/dna/ 以下に JSON で管理"""
+"""企業DNA・タスクログ保存 — data/ 以下に JSON で管理"""
 from __future__ import annotations
 
 import json
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 DNA_DIR = Path("data/dna")
+TASK_LOG = Path("data/task_log.json")
 
 
 def _path(company_id: str) -> Path:
@@ -30,6 +32,82 @@ def load_dna(company_id: str) -> dict[str, Any] | None:
     if not p.exists():
         return None
     return json.loads(p.read_text())
+
+
+def list_companies() -> list[dict[str, Any]]:
+    """DNAが登録済みの全企業をリストで返す"""
+    if not DNA_DIR.exists():
+        return []
+    result = []
+    for p in sorted(DNA_DIR.glob("*.json")):
+        try:
+            d = json.loads(p.read_text())
+            result.append({
+                "id":      p.stem,
+                "name":    d.get("company_name", p.stem),
+                "industry": d.get("industry", ""),
+                "mission": d.get("goal_1y", ""),
+                "plan":    d.get("plan", "starter"),
+                "dna_only": True,
+            })
+        except Exception:
+            pass
+    return result
+
+
+def dna_to_company_config(company_id: str, dna: dict[str, Any]) -> dict[str, Any]:
+    """DNAから stream.py が必要とする会社設定辞書を生成する"""
+    return {
+        "config_version": "1.0",
+        "company_id":     company_id,
+        "company_name":   dna.get("company_name", company_id),
+        "industry":       dna.get("industry", ""),
+        "language":       "ja",
+        "tone":           "professional",
+        "company_mission": dna.get("goal_1y", ""),
+        "company_context": "",
+        "template_context": "",
+        "active_addons":  dna.get("active_skills", []),
+    }
+
+
+def save_task_log(
+    company_id: str,
+    company_name: str,
+    task: str,
+    result: str,
+    cost_ref: float,
+) -> None:
+    TASK_LOG.parent.mkdir(parents=True, exist_ok=True)
+    entry = {
+        "task_id":      str(uuid.uuid4()),
+        "company_id":   company_id,
+        "company_name": company_name,
+        "task":         task,
+        "result":       result,
+        "cost_ref":     cost_ref,
+        "created_at":   datetime.now().isoformat(),
+    }
+    existing: list[dict] = []
+    if TASK_LOG.exists():
+        try:
+            existing = json.loads(TASK_LOG.read_text())
+        except Exception:
+            existing = []
+    existing.insert(0, entry)
+    TASK_LOG.write_text(json.dumps(existing[:200], ensure_ascii=False, indent=2))
+
+
+def list_task_log(company_id: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
+    if not TASK_LOG.exists():
+        return []
+    try:
+        tasks = json.loads(TASK_LOG.read_text())
+    except Exception:
+        return []
+    if company_id:
+        tasks = [t for t in tasks if t.get("company_id") == company_id]
+    return tasks[:limit]
 
 
 def dna_to_context(dna: dict[str, Any]) -> str:

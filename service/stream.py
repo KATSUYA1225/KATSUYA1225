@@ -90,23 +90,26 @@ def list_presets() -> list[dict[str, str]]:
 
 
 async def run_stream(company_yaml: str, task: str) -> AsyncGenerator[str, None]:
+    from service.company_store import load_dna, dna_to_context, dna_to_company_config, save_task_log
+
     path = COMPANIES_DIR / f"{company_yaml}.yaml"
-    if not path.exists():
-        yield _sse("error", message=f"企業設定ファイルが見つかりません: {company_yaml}")
+
+    dna = load_dna(company_yaml)
+
+    if path.exists():
+        company = dict(_load_yaml(path))
+    elif dna:
+        # YAMLがなくてもDNAがあれば実行可能
+        company = dna_to_company_config(company_yaml, dna)
+    else:
+        yield _sse("error", message=f"企業設定が見つかりません: {company_yaml}")
         return
 
-    company = dict(_load_yaml(path))
-
-    # 企業DNAが登録済みであればコンテキストに注入する
-    try:
-        from service.company_store import load_dna, dna_to_context
-        dna = load_dna(company_yaml)
-        if dna:
-            extra = dna_to_context(dna)
-            if extra:
-                company["company_context"] = company.get("company_context", "") + "\n\n" + extra
-    except Exception:
-        pass
+    # DNAコンテキストをプロンプトに注入
+    if dna:
+        extra = dna_to_context(dna)
+        if extra:
+            company["company_context"] = company.get("company_context", "") + "\n\n" + extra
 
     mandatory = ["president", "marketing", "sns_pr"]
     emp_ids = list(dict.fromkeys(mandatory + company.get("active_addons", [])))
@@ -188,5 +191,19 @@ async def run_stream(company_yaml: str, task: str) -> AsyncGenerator[str, None]:
         yield _sse("error", message=f"最終決裁生成エラー: {exc}")
         return
 
-    yield _sse("result", content=final, cost_ref=round(_ref_cost(len(delegations)), 1))
+    cost_ref = round(_ref_cost(len(delegations)), 1)
+    yield _sse("result", content=final, cost_ref=cost_ref)
+
+    # タスクログに保存
+    try:
+        save_task_log(
+            company_id=company_yaml,
+            company_name=company.get("company_name", company_yaml),
+            task=task,
+            result=final,
+            cost_ref=cost_ref,
+        )
+    except Exception:
+        pass
+
     yield "data: [DONE]\n\n"
