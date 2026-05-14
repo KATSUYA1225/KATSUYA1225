@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI社長があなたの会社を経営する。東京発・次世代AI経営OS。">
+<title>AI企業OS — 経営を、美しく進化させる。</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+JP:wght@300;400;500;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#faf7f2;color:#1c1714;font-family:'Inter',sans-serif;overflow-x:hidden;cursor:none}
+
+/* ─── Custom Cursor ─────────────────────────────── */
+#cr{width:28px;height:28px;border:1px solid rgba(196,160,152,.7);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .25s,background .25s}
+#cd{width:4px;height:4px;background:#c4a098;border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+.cur-h{width:44px!important;height:44px!important;border-color:rgba(201,168,76,.6)!important;background:rgba(201,168,76,.06)!important}
+@media(hover:none){#cr,#cd{display:none}body{cursor:auto}}
+
+/* ─── Variables ─────────────────────────────────── */
+:root{
+  --ivory:#faf7f2;
+  --cream:#f5ede4;
+  --warm:#ede3d8;
+  --dark:#1c1714;
+  --dark2:#2e2520;
+  --ash:#6b5f55;
+  --stone:#9e9288;
+  --rose:#c4a098;
+  --gold:#c9a84c;
+  --blush:#e8d0c8;
+  --sage:#8fa89a;
+  --wine:#7a3040;
+  --bdr:rgba(28,23,20,.1);
+  --bdr-r:rgba(196,160,152,.35);
+  --shd:0 4px 40px rgba(28,23,20,.08);
+  --shd-h:0 12px 48px rgba(28,23,20,.14);
+}
+
+/* ─── Canvas (hero only) ────────────────────────── */
+#cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+/* ─── Layout ────────────────────────────────────── */
+.wrap{max-width:1100px;margin:0 auto;padding:0 32px}
+.sec{position:relative;z-index:1;padding:108px 0}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;line-height:1.08;letter-spacing:-.01em}
+.jp{font-family:'Noto Serif JP',serif}
+
+/* ─── Gradient text ─────────────────────────────── */
+.shim{
+  background:linear-gradient(90deg,#c4a098,#c9a84c,#c4a098,#c9a84c,#c4a098);
+  background-size:400%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shim 8s ease-in-out infinite;
+}
+@keyframes shim{0%{background-position:0% center}50%{background-position:100% center}100%{background-position:0% center}}
+.rose-t{color:var(--rose)}
+.gold-t{color:var(--gold)}
+
+/* ─── Nav ───────────────────────────────────────── */
+#nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 36px;transition:background .4s,backdrop-filter .4s,border-bottom .4s}
+#nav.on{background:rgba(250,247,242,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--bdr)}
+.nav-in{max-width:1100px;margin:0 auto;display:flex;align-items:center}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--dark);font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:500;letter-spacing:.04em}
+.nmark{width:28px;height:28px;border:1px solid var(--rose);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--rose)}
+.nlinks{display:flex;gap:32px;margin-left:auto}
+.nlinks a{text-decoration:none;color:var(--ash);font-size:.84rem;letter-spacing:.06em;transition:color .2s;position:relative}
+.nlinks a::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;background:var(--rose);transform:scaleX(0);transition:transform .25s}
+.nlinks a:hover{color:var(--dark)}.nlinks a:hover::after{transform:scaleX(1)}
+.nacts{display:flex;gap:12px;margin-left:28px}
+@media(max-width:640px){.nlinks{display:none}}
+
+/* ─── Buttons ───────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:500;letter-spacing:.08em;text-decoration:none;cursor:pointer;border:none;transition:all .28s;white-space:nowrap;border-radius:2px}
+.btn-lg{padding:15px 36px;font-size:1.1rem}
+.btn-sm{padding:8px 20px;font-size:.88rem}
+.btn-p{background:var(--dark);color:#faf7f2;position:relative;overflow:hidden}
+.btn-p::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--rose),var(--gold));opacity:0;transition:opacity .3s}
+.btn-p:hover::before{opacity:1}
+.btn-p span{position:relative;z-index:1}
+.btn-o{background:transparent;color:var(--dark);border:1px solid var(--bdr);letter-spacing:.08em}
+.btn-o:hover{border-color:var(--rose);color:var(--rose)}
+.btn-r{background:var(--rose);color:#faf7f2}
+.btn-r:hover{background:var(--wine);transform:translateY(-1px)}
+
+/* ─── Hero ──────────────────────────────────────── */
+#hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:140px 32px 100px;text-align:center;overflow:hidden;background:var(--ivory)}
+.h-tag{display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--stone);letter-spacing:.18em;text-transform:uppercase;margin-bottom:32px;position:relative;z-index:1}
+.h-tag::before,.h-tag::after{content:'';width:24px;height:1px;background:var(--rose);opacity:.6}
+.htit{font-size:clamp(3.5rem,9vw,7rem);font-weight:300;letter-spacing:-.02em;margin-bottom:28px;line-height:1.02;position:relative;z-index:1}
+.htit .l1{display:block;color:var(--dark)}
+.htit .l2{display:block;font-style:italic}
+/* subtle entrance animation for title */
+.htit .l2{animation:titleFade 1.4s cubic-bezier(.2,0,.1,1) .3s both}
+@keyframes titleFade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hsub{max-width:460px;margin:0 auto 44px;color:var(--ash);font-size:1.02rem;line-height:1.88;position:relative;z-index:1;font-family:'Noto Serif JP',serif;font-weight:300;letter-spacing:.04em}
+.hacts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:64px}
+.hkpi{display:flex;gap:52px;align-items:center;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.kp{text-align:center}
+.kpn{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--dark);line-height:1;letter-spacing:-.02em}
+.kps{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--rose)}
+.kpl{display:block;font-size:.68rem;color:var(--stone);letter-spacing:.12em;text-transform:uppercase;margin-top:6px}
+.kdv{width:1px;height:44px;background:var(--bdr)}
+.scrl-h{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
+.scrl-h span{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.22em;color:var(--stone);text-transform:uppercase}
+.scrl-bar{width:1px;height:38px;background:linear-gradient(to bottom,var(--rose),transparent);animation:scrlA 2.2s ease-in-out infinite}
+@keyframes scrlA{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media(max-width:560px){.hkpi{gap:24px}.kdv{display:none}}
+
+/* ─── Manifesto ─────────────────────────────────── */
+#manifest{background:var(--dark2);padding:100px 32px;text-align:center}
+.mq{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4.5vw,3.6rem);font-weight:300;color:#f5ede4;line-height:1.3;letter-spacing:-.01em;font-style:italic;max-width:820px;margin:0 auto 28px}
+.mq em{font-style:normal;color:var(--gold)}
+.ms{font-family:'Noto Serif JP',serif;font-size:.92rem;color:rgba(245,237,228,.5);line-height:1.9;max-width:480px;margin:0 auto;letter-spacing:.04em}
+.mdash{width:32px;height:1px;background:var(--rose);margin:32px auto}
+
+/* ─── Value ─────────────────────────────────────── */
+#value{background:var(--ivory)}
+.slbl{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--rose);letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px}
+.stit{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.8vw,2.9rem);font-weight:400;color:var(--dark);margin-bottom:14px;letter-spacing:-.01em}
+.ssub{color:var(--ash);font-size:.95rem;line-height:1.8;max-width:460px;font-family:'Noto Serif JP',serif;font-weight:300;letter-spacing:.03em}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.vc{background:var(--ivory);padding:44px 36px;border:1px solid var(--bdr);transition:all .32s;position:relative;overflow:hidden}
+.vc::before{content:'';position:absolute;top:0;left:0;width:2px;height:0;background:linear-gradient(to bottom,var(--rose),var(--gold));transition:height .4s}
+.vc:hover::before{height:100%}
+.vc:hover{background:var(--cream);box-shadow:var(--shd-h);z-index:1}
+.vi{font-size:1.8rem;margin-bottom:20px;display:block;opacity:.9}
+.vn{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:400;line-height:1;margin-bottom:10px;letter-spacing:-.01em}
+.vtit{font-size:.9rem;color:var(--dark);font-weight:500;margin-bottom:10px;letter-spacing:.04em;text-transform:uppercase;font-family:'Inter',sans-serif}
+.vd{font-size:.86rem;color:var(--ash);line-height:1.82;font-family:'Noto Serif JP',serif;font-weight:300}
+@media(max-width:800px){.vgrid{grid-template-columns:1fr}}
+
+/* ─── Concept ───────────────────────────────────── */
+#concept{background:var(--cream)}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:88px;align-items:center}
+.cline{width:40px;height:1px;background:var(--rose);margin-bottom:28px}
+.clist{list-style:none;margin-top:32px;display:flex;flex-direction:column;gap:24px}
+.clist li{display:flex;gap:16px;align-items:flex-start;padding-bottom:24px;border-bottom:1px solid var(--bdr)}
+.clist li:last-child{border-bottom:none;padding-bottom:0}
+.cnum{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--rose);flex-shrink:0;line-height:1.2}
+.ct{font-size:.9rem;font-weight:500;margin-bottom:5px;color:var(--dark);letter-spacing:.03em}
+.cd{font-size:.83rem;color:var(--ash);line-height:1.78;font-family:'Noto Serif JP',serif;font-weight:300}
+/* Org visual */
+.org-wrap{background:var(--ivory);border:1px solid var(--bdr);border-radius:4px;padding:36px 32px;box-shadow:var(--shd)}
+.op{text-align:center;padding:14px 24px;border:1px solid var(--bdr-r);border-radius:2px;font-family:'Noto Serif JP',serif;font-size:.88rem;color:var(--dark);margin-bottom:4px;background:linear-gradient(135deg,rgba(196,160,152,.06),rgba(201,168,76,.04));display:inline-block;width:100%}
+.op strong{color:var(--rose)}
+.ovline{width:1px;height:24px;background:linear-gradient(to bottom,var(--rose),var(--bdr));margin:0 auto}
+.odgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.od{padding:10px 6px;border:1px solid var(--bdr);border-radius:2px;text-align:center;font-size:.74rem;color:var(--ash);font-family:'Noto Serif JP',serif;transition:all .22s;cursor:default}
+.od:hover{border-color:var(--rose);color:var(--rose);background:rgba(196,160,152,.05);transform:translateY(-2px)}
+.od span{display:block;font-size:1.1rem;margin-bottom:3px}
+.oskip{margin-top:16px;text-align:center;font-size:.76rem;color:var(--stone);font-family:'JetBrains Mono',monospace;letter-spacing:.06em;padding:10px;border:1px dashed var(--bdr-r);border-radius:2px}
+@media(max-width:840px){.cgrid{grid-template-columns:1fr}.odgrid{grid-template-columns:repeat(2,1fr)}}
+
+/* ─── Skills ────────────────────────────────────── */
+#skills{background:var(--ivory)}
+.skgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:1px;border:1px solid var(--bdr)}
+.skc{background:var(--ivory);padding:22px 18px;border:none;transition:all .28s;position:relative;overflow:hidden}
+.skc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--rose),var(--gold));transform:scaleX(0);transition:transform .3s}
+.skc:hover{background:var(--cream);box-shadow:0 0 0 1px var(--bdr-r);z-index:1}
+.skc:hover::after{transform:scaleX(1)}
+.skc.new{background:rgba(196,160,152,.05)}
+.ski{font-size:1.7rem;margin-bottom:10px;display:block}
+.skn{font-size:.83rem;font-weight:500;color:var(--dark);margin-bottom:5px;letter-spacing:.02em}
+.skp{font-size:.7rem;color:var(--stone);font-family:'JetBrains Mono',monospace}
+.skt{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:1px;font-size:.65rem;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em}
+.tc{border:1px solid rgba(196,160,152,.4);color:var(--rose)}
+.tg{border:1px solid rgba(143,168,154,.4);color:var(--sage)}
+.ti{border:1px solid rgba(201,168,76,.4);color:var(--gold)}
+.tnew{border:1px solid rgba(122,48,64,.4);color:var(--wine)}
+
+/* ─── How ───────────────────────────────────────── */
+#how{background:var(--warm)}
+.hwgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.hwstep{padding:44px 36px;background:var(--warm);border:1px solid var(--bdr);position:relative;overflow:hidden;transition:background .3s}
+.hwstep:hover{background:var(--cream)}
+.hwn{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:rgba(196,160,152,.25);line-height:1;margin-bottom:20px;letter-spacing:-.04em}
+.hwt{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;color:var(--dark);margin-bottom:12px}
+.hwd{font-size:.85rem;color:var(--ash);line-height:1.8;font-family:'Noto Serif JP',serif;font-weight:300}
+.hw-line{width:24px;height:1px;background:var(--rose);margin-bottom:16px}
+@media(max-width:700px){.hwgrid{grid-template-columns:1fr}}
+
+/* ─── Pricing ───────────────────────────────────── */
+#pricing{background:var(--ivory)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border:1px solid var(--bdr)}
+.pc{background:var(--ivory);padding:36px 24px;border:none;transition:background .28s;position:relative}
+.pc.hot{background:var(--cream)}
+.pc.hot::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--rose),var(--gold))}
+.pbd{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--rose);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.ppl{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--stone);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px}
+.pamt{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;color:var(--dark);line-height:1;margin-bottom:4px;letter-spacing:-.02em}
+.pamt span{font-size:1rem;font-weight:300;color:var(--ash)}
+.ppd{font-size:.72rem;color:var(--stone);margin-bottom:24px;font-family:'JetBrains Mono',monospace}
+.pdv{width:100%;height:1px;background:var(--bdr);margin-bottom:20px}
+.pft{list-style:none;margin-bottom:28px}
+.pft li{font-size:.8rem;color:var(--ash);padding:7px 0;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;font-family:'Noto Serif JP',serif;font-weight:300}
+.pft li::before{content:'—';color:var(--rose);flex-shrink:0;font-size:.9rem}
+@media(max-width:920px){.pgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.pgrid{grid-template-columns:1fr}.pc.hot{background:var(--cream)}}
+
+/* ─── CTA ───────────────────────────────────────── */
+#cta{background:var(--dark2);padding:120px 32px;text-align:center;position:relative;overflow:hidden}
+#cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(196,160,152,.06) 0%,transparent 70%)}
+.ctatit{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,5.5vw,4.2rem);font-weight:300;color:#f5ede4;line-height:1.12;margin-bottom:20px;font-style:italic;letter-spacing:-.01em;position:relative;z-index:1}
+.ctasub{color:rgba(245,237,228,.5);font-size:.95rem;margin-bottom:44px;position:relative;z-index:1;font-family:'Noto Serif JP',serif;font-weight:300;letter-spacing:.04em;line-height:1.9}
+.ctabt{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.cta-dec{position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(196,160,152,.06);top:-60px;left:-60px;pointer-events:none}
+.cta-dec2{position:absolute;width:200px;height:200px;border-radius:50%;border:1px solid rgba(201,168,76,.05);bottom:-40px;right:60px;pointer-events:none}
+
+/* ─── Footer ────────────────────────────────────── */
+footer{background:var(--dark);padding:44px 32px;z-index:1;position:relative}
+.fin{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.flogo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:rgba(245,237,228,.5);letter-spacing:.04em}
+.fmk{width:22px;height:22px;border:1px solid rgba(196,160,152,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:rgba(196,160,152,.5)}
+.flinks{display:flex;gap:24px}
+.flinks a{font-size:.78rem;color:rgba(245,237,228,.3);text-decoration:none;letter-spacing:.06em;transition:color .2s;font-family:'JetBrains Mono',monospace}
+.flinks a:hover{color:rgba(196,160,152,.7)}
+.fcp{font-size:.72rem;color:rgba(245,237,228,.2);width:100%;margin-top:14px;letter-spacing:.06em;font-family:'JetBrains Mono',monospace}
+
+/* ─── Reveal ────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.2,0,.1,1),transform .8s cubic-bezier(.2,0,.1,1)}
+.rv.on{opacity:1;transform:none}
+.rv-l{opacity:0;transform:translateX(-20px);transition:opacity .8s cubic-bezier(.2,0,.1,1),transform .8s cubic-bezier(.2,0,.1,1)}
+.rv-l.on{opacity:1;transform:none}
+.rv-r{opacity:0;transform:translateX(20px);transition:opacity .8s cubic-bezier(.2,0,.1,1),transform .8s cubic-bezier(.2,0,.1,1)}
+.rv-r.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+
+/* ─── Section divider line ──────────────────────── */
+.rule{width:40px;height:1px;background:var(--rose);margin:0 auto 14px}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cr"></div>
+<div id="cd"></div>
+
+<!-- ── Nav ─────────────────────────────────────── -->
+<nav id="nav">
+  <div class="nav-in">
+    <a href="/" class="nlogo">
+      <div class="nmark">AI</div>
+      AI企業OS
+    </a>
+    <div class="nlinks">
+      <a href="#value">特徴</a>
+      <a href="#concept">仕組み</a>
+      <a href="#skills">スキル</a>
+      <a href="#pricing">料金</a>
+    </div>
+    <div class="nacts">
+      <a href="/app" class="btn btn-o btn-sm">ログイン</a>
+      <a href="/app" class="btn btn-p btn-sm"><span>無料で始める</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ────────────────────────────────────── -->
+<section id="hero">
+  <canvas id="cv"></canvas>
+
+  <div class="h-tag rv">✦ &nbsp; Tokyo &nbsp;·&nbsp; 2026 &nbsp;·&nbsp; AI経営の新標準 &nbsp; ✦</div>
+
+  <h1 class="htit rv d1">
+    <span class="l1 jp" style="font-weight:300;letter-spacing:.04em">経営を、</span>
+    <span class="l2 shim">美しく進化させる。</span>
+  </h1>
+
+  <p class="hsub rv d2">
+    AI社長が、あなたの会社の可能性を最大化する。<br>
+    戦略・マーケティング・ブランディング・デザイン——<br>
+    東京発の次世代AI経営OS。
+  </p>
+
+  <div class="hacts rv d3">
+    <a href="/app" class="btn btn-p btn-lg"><span>今すぐ無料で体験する</span></a>
+    <a href="#value" class="btn btn-o btn-lg">詳しく見る</a>
+  </div>
+
+  <div class="hkpi rv d4">
+    <div class="kp">
+      <div><span class="kpn" data-cnt="23">0</span><span class="kps">+</span></div>
+      <span class="kpl">専門エージェント</span>
+    </div>
+    <div class="kdv"></div>
+    <div class="kp">
+      <div><span class="kpn" data-cnt="24">0</span><span class="kps">h</span></div>
+      <span class="kpl">ノンストップ稼働</span>
+    </div>
+    <div class="kdv"></div>
+    <div class="kp">
+      <div><span class="kpn" data-cnt="90">0</span><span class="kps">%</span></div>
+      <span class="kpl">コスト削減</span>
+    </div>
+  </div>
+
+  <div class="scrl-h">
+    <span>Scroll</span>
+    <div class="scrl-bar"></div>
+  </div>
+</section>
+
+<!-- ── Manifesto ─────────────────────────────────── -->
+<section id="manifest">
+  <div class="wrap">
+    <p class="mq rv">
+      「ひとりの起業家が、<em>大企業と同じ頭脳</em>で戦えるとしたら——」
+    </p>
+    <div class="mdash"></div>
+    <p class="ms rv d2">
+      AI企業OSは、23の専門エージェントをあなたの会社に宿す。<br>
+      それは、あなたの才能を100倍にするOS。
+    </p>
+  </div>
+</section>
+
+<!-- ── Value ────────────────────────────────────── -->
+<section id="value" class="sec">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:56px">
+      <div class="slbl rv">Why AI企業OS</div>
+      <h2 class="stit rv d1">なぜ今、AIが経営するのか</h2>
+      <p class="ssub rv d2" style="margin:0 auto">ヒトの限界を、知性が超える。疲れず、忘れず、瞬時に判断するAIチームが、あなたの会社を動かす。</p>
+    </div>
+    <div class="vgrid">
+      <div class="vc rv">
+        <span class="vi">✦</span>
+        <div class="vn shim">即戦力</div>
+        <div class="vtit">即日稼働 · 即時応答</div>
+        <div class="vd">採用・研修ゼロ。プロフィール登録の翌秒から、23部門のAIエージェントが全力で稼働を開始します。</div>
+      </div>
+      <div class="vc rv d2">
+        <span class="vi">◇</span>
+        <div class="vn shim">AI社長</div>
+        <div class="vtit">意思決定を自動化</div>
+        <div class="vd">最高性能AIを搭載した社長エージェントが各部門を指揮。戦略・実行・報告のサイクルを24時間回します。</div>
+      </div>
+      <div class="vc rv d3">
+        <span class="vi">◯</span>
+        <div class="vn shim">¥9,800〜</div>
+        <div class="vtit">役員チームを圧倒的コストで</div>
+        <div class="vd">役員1人の人件費の1/100以下。スタートアップから上場企業まで、規模に合わせた4プランをご用意。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Concept ───────────────────────────────────── -->
+<section id="concept" class="sec">
+  <div class="wrap">
+    <div class="cgrid">
+      <div>
+        <div class="cline rv-l"></div>
+        <div class="slbl rv-l">The Structure</div>
+        <h2 class="stit rv-l d1">AIが経営チームになる</h2>
+        <p class="ssub rv-l d2">AI社長が組織のトップに立ち、各専門部門のエージェントへ指示を出す。あなたはCEOとして、大きな方向性だけを決めればいい。</p>
+        <ul class="clist rv-l d3">
+          <li>
+            <span class="cnum">01</span>
+            <div><div class="ct">会社プロフィールを登録</div><div class="cd">業種・ミッション・課題を入力するだけで、AIチームが企業DNAを学習し、専用編成で稼働を開始します。</div></div>
+          </li>
+          <li>
+            <span class="cnum">02</span>
+            <div><div class="ct">タスクをAI社長に依頼</div><div class="cd">「新規事業の戦略を立案して」——一言指示するだけで、複数部門が連携して並列実行します。</div></div>
+          </li>
+          <li>
+            <span class="cnum">03</span>
+            <div><div class="ct">戦略・報告書を受け取る</div><div class="cd">各部門の報告を社長がまとめ、即実行できる戦略パッケージとして届けます。</div></div>
+          </li>
+        </ul>
+      </div>
+      <div class="rv-r d1">
+        <div class="org-wrap">
+          <div class="op"><strong>👑 AI社長</strong> ── President Agent</div>
+          <div class="ovline"></div>
+          <div class="odgrid">
+            <div class="od"><span>📊</span>マーケ</div>
+            <div class="od"><span>💼</span>営業</div>
+            <div class="od"><span>💰</span>財務</div>
+            <div class="od"><span>⚖️</span>法務</div>
+            <div class="od"><span>🎯</span>戦略</div>
+            <div class="od" style="border-color:rgba(122,48,64,.25)"><span>🎥</span>デザイン</div>
+          </div>
+          <div class="oskip">+ 17の専門スキルをアドオン</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Skills ────────────────────────────────────── -->
+<section id="skills" class="sec">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:52px">
+      <div class="rule rv"></div>
+      <div class="slbl rv d1">All Skills</div>
+      <h2 class="stit rv d2">23の専門エージェント</h2>
+      <p class="ssub rv d3" style="margin:0 auto">それぞれが、あなたの会社のカルチャーと業界を学習して動く。</p>
+    </div>
+    <div class="skgrid" id="skgrid">
+      <div class="skc rv"><span class="ski">👑</span><div class="skn">AI社長</div><div class="skp">必須 · Opus 4.7</div><span class="skt tc">core</span></div>
+      <div class="skc rv d1"><span class="ski">📊</span><div class="skn">マーケティング</div><div class="skp">¥2,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d2"><span class="ski">💼</span><div class="skn">営業専門</div><div class="skp">¥2,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d1"><span class="ski">💰</span><div class="skn">財務分析</div><div class="skp">¥2,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d2"><span class="ski">🎯</span><div class="skn">経営戦略</div><div class="skp">¥4,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d1"><span class="ski">⚖️</span><div class="skn">法務・コンプラ</div><div class="skp">¥4,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d2"><span class="ski">👥</span><div class="skn">人事・組織</div><div class="skp">¥2,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d1"><span class="ski">📈</span><div class="skn">データ分析</div><div class="skp">¥2,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d2"><span class="ski">🛠️</span><div class="skn">プロダクト開発</div><div class="skp">¥2,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d1"><span class="ski">🤝</span><div class="skn">カスタマーサクセス</div><div class="skp">¥2,980/月〜</div><span class="skt tg">general</span></div>
+      <div class="skc rv d2"><span class="ski">📱</span><div class="skn">SNS専門広報</div><div class="skp">included</div><span class="skt tc">core</span></div>
+      <div class="skc new rv d1"><span class="ski">🎥</span><div class="skn">デジタルビジュアル</div><div class="skp">¥4,980/月〜 · NEW</div><span class="skt tnew">new</span></div>
+      <div class="skc rv d2"><span class="ski">🎨</span><div class="skn">ブランドデザイン</div><div class="skp">¥9,800/月〜</div><span class="skt tc">creative</span></div>
+      <div class="skc rv d1"><span class="ski">💻</span><div class="skn">UI/UXスペシャリスト</div><div class="skp">¥9,800/月〜</div><span class="skt tc">creative</span></div>
+      <div class="skc rv d2"><span class="ski">✍️</span><div class="skn">コピーライター</div><div class="skp">¥4,980/月〜</div><span class="skt tc">creative</span></div>
+      <div class="skc rv d1"><span class="ski">🎬</span><div class="skn">動画コンテンツ</div><div class="skp">¥4,980/月〜</div><span class="skt tc">creative</span></div>
+      <div class="skc rv d2"><span class="ski">🏛️</span><div class="skn">建築プレゼン</div><div class="skp">¥9,800/月〜</div><span class="skt ti">industry</span></div>
+      <div class="skc rv d1"><span class="ski">🍽️</span><div class="skn">飲食コンサル</div><div class="skp">¥4,980/月〜</div><span class="skt ti">industry</span></div>
+      <div class="skc rv d2"><span class="ski">⚙️</span><div class="skn">製造業・職人</div><div class="skp">¥9,800/月〜</div><span class="skt ti">industry</span></div>
+      <div class="skc rv d1"><span class="ski">🏥</span><div class="skn">医療・介護</div><div class="skp">¥9,800/月〜</div><span class="skt ti">industry</span></div>
+      <div class="skc rv d2"><span class="ski">🏠</span><div class="skn">不動産マーケ</div><div class="skp">¥9,800/月〜</div><span class="skt ti">industry</span></div>
+      <div class="skc rv d1"><span class="ski">🛒</span><div class="skn">EC・通販専門</div><div class="skp">¥4,980/月〜</div><span class="skt ti">industry</span></div>
+      <div class="skc rv d2"><span class="ski">🔍</span><div class="skn">強み発見</div><div class="skp">無料</div><span class="skt tc">core</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How ──────────────────────────────────────── -->
+<section id="how" class="sec">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:56px">
+      <div class="slbl rv">How It Works</div>
+      <h2 class="stit rv d1">3ステップで始める</h2>
+    </div>
+    <div class="hwgrid">
+      <div class="hwstep rv">
+        <div class="hw-line"></div>
+        <div class="hwn">01</div>
+        <div class="hwt">会社を登録する</div>
+        <div class="hwd">業種・ミッション・目標を入力。AIが企業DNAを学習し、あなた専用のエージェントチームを自動編成します。</div>
+      </div>
+      <div class="hwstep rv d2">
+        <div class="hw-line"></div>
+        <div class="hwn">02</div>
+        <div class="hwt">タスクを依頼する</div>
+        <div class="hwd">AI社長に自然言語で指示を出すだけ。複数の専門エージェントがリアルタイムで連携して動き出します。</div>
+      </div>
+      <div class="hwstep rv d4">
+        <div class="hw-line"></div>
+        <div class="hwn">03</div>
+        <div class="hwt">成果を受け取る</div>
+        <div class="hwd">戦略書・分析レポート・クリエイティブが即座に生成。すぐに経営判断や実行に活用できます。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing ───────────────────────────────────── -->
+<section id="pricing" class="sec">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:52px">
+      <div class="slbl rv">Pricing</div>
+      <h2 class="stit rv d1">シンプルな料金体系</h2>
+      <p class="ssub rv d2" style="margin:0 auto">全プランで無料トライアル。クレジットカード不要。</p>
+    </div>
+    <div class="pgrid">
+      <div class="pc rv">
+        <div class="ppl">Starter</div>
+        <div class="pamt">¥9,800<span>/月</span></div>
+        <div class="ppd">税込 ¥10,780</div>
+        <div class="pdv"></div>
+        <ul class="pft">
+          <li>AI社長エージェント</li>
+          <li>基本6部門スキル</li>
+          <li>月30タスクまで</li>
+          <li>企業DNA学習</li>
+          <li>タスク履歴30日</li>
+        </ul>
+        <a href="/app" class="btn btn-o" style="width:100%;justify-content:center">無料で試す</a>
+      </div>
+      <div class="pc hot rv d1">
+        <div class="pbd">人気 No.1</div>
+        <div class="ppl">Growth</div>
+        <div class="pamt shim" style="font-style:normal">¥29,800<span style="-webkit-text-fill-color:var(--ash)">/月</span></div>
+        <div class="ppd">税込 ¥32,780</div>
+        <div class="pdv"></div>
+        <ul class="pft">
+          <li>Starterの全機能</li>
+          <li>専門スキル5つ選択</li>
+          <li>月200タスクまで</li>
+          <li>デジタルビジュアル含む</li>
+          <li>優先レスポンス</li>
+        </ul>
+        <a href="/app" class="btn btn-r" style="width:100%;justify-content:center">無料で始める</a>
+      </div>
+      <div class="pc rv d2">
+        <div class="ppl">Business</div>
+        <div class="pamt">¥59,800<span>/月</span></div>
+        <div class="ppd">税込 ¥65,780</div>
+        <div class="pdv"></div>
+        <ul class="pft">
+          <li>全スキル無制限</li>
+          <li>タスク無制限</li>
+          <li>チーム5名まで</li>
+          <li>APIアクセス</li>
+          <li>専任サポート</li>
+        </ul>
+        <a href="/app" class="btn btn-o" style="width:100%;justify-content:center">無料で試す</a>
+      </div>
+      <div class="pc rv d3">
+        <div class="ppl">Enterprise</div>
+        <div class="pamt" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem">要相談</div>
+        <div class="ppd">&nbsp;</div>
+        <div class="pdv"></div>
+        <ul class="pft">
+          <li>完全カスタマイズ</li>
+          <li>専用インフラ構築</li>
+          <li>SLA保証</li>
+          <li>カスタムエージェント開発</li>
+          <li>専任CTO派遣</li>
+        </ul>
+        <a href="mailto:gp.k122517@gmail.com" class="btn btn-o" style="width:100%;justify-content:center">お問い合わせ</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────────────── -->
+<section id="cta">
+  <div class="cta-dec"></div>
+  <div class="cta-dec2"></div>
+  <div class="wrap">
+    <div class="rule rv" style="background:var(--rose);width:32px"></div>
+    <h2 class="ctatit rv d1">
+      さあ、AIとともに<br>
+      <em>経営を、再定義しよう。</em>
+    </h2>
+    <p class="ctasub rv d2">今すぐ登録して、AI経営の未来を体験してください。<br>セットアップは5分。即日稼働。</p>
+    <div class="ctabt rv d3">
+      <a href="/app" class="btn btn-p btn-lg"><span>無料アカウントを作成 →</span></a>
+      <a href="/app" class="btn btn-o btn-lg" style="color:rgba(245,237,228,.6);border-color:rgba(245,237,228,.15)">デモを見る</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ────────────────────────────────────── -->
+<footer>
+  <div class="fin">
+    <a href="/" class="flogo">
+      <div class="fmk">AI</div>
+      AI企業OS
+    </a>
+    <div class="flinks">
+      <a href="#value">特徴</a>
+      <a href="#pricing">料金</a>
+      <a href="/app">アプリを開く</a>
+    </div>
+    <div class="fcp">© 2026 AI企業OS · Future Share Collective · All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+/* ── Cursor ──────────────────────────────────────── */
+const cr=document.getElementById('cr'),cd=document.getElementById('cd');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY},{passive:true});
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cr.classList.add('cur-h'));
+  el.addEventListener('mouseleave',()=>cr.classList.remove('cur-h'));
+});
+(function tick(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;cr.style.left=rx+'px';cr.style.top=ry+'px';cd.style.left=mx+'px';cd.style.top=my+'px';requestAnimationFrame(tick)})();
+
+/* ── Nav ─────────────────────────────────────────── */
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('on',scrollY>50),{passive:true});
+
+/* ── Bokeh Canvas ────────────────────────────────── */
+const cv=document.getElementById('cv');
+if(cv){
+  const ctx=cv.getContext('2d');
+  let W,H,orbs=[];
+  const COLS=[
+    [200,164,152],[201,168,76],[143,168,154],[220,200,188],[180,160,200]
+  ];
+  class Orb{
+    constructor(){
+      this.reset(true);
+    }
+    reset(init){
+      this.x=Math.random()*W;
+      this.y=init?Math.random()*H:H+100;
+      this.r=30+Math.random()*90;
+      this.vx=(Math.random()-.5)*.18;
+      this.vy=-(Math.random()*.15+.05);
+      const c=COLS[Math.floor(Math.random()*COLS.length)];
+      this.r_=c[0];this.g_=c[1];this.b_=c[2];
+      this.a=.06+Math.random()*.12;
+      this.ph=Math.random()*Math.PI*2;
+      this.ps=(Math.random()*.004+.001)*(Math.random()<.5?1:-1);
+    }
+    upd(mx,my){
+      const dx=mx-this.x,dy=my-this.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<350&&d>0){this.vx+=dx/d*.0012;this.vy+=dy/d*.0012}
+      const sp=Math.sqrt(this.vx*this.vx+this.vy*this.vy);
+      if(sp>.25){this.vx=this.vx/sp*.25;this.vy=this.vy/sp*.25}
+      this.vx*=.995;this.vy*=.995;
+      this.x+=this.vx;this.y+=this.vy;
+      this.ph+=this.ps;
+      const m=this.r+20;
+      if(this.x<-m)this.x=W+m;if(this.x>W+m)this.x=-m;
+      if(this.y<-m)this.y=H+m;if(this.y>H+m)this.reset(false);
+    }
+    draw(){
+      const pulse=1+.12*Math.sin(this.ph);
+      const r=this.r*pulse;
+      const a=this.a*(0.88+.12*Math.sin(this.ph*1.5));
+      const g=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,r);
+      g.addColorStop(0,`rgba(${this.r_},${this.g_},${this.b_},${a})`);
+      g.addColorStop(1,`rgba(${this.r_},${this.g_},${this.b_},0)`);
+      ctx.save();ctx.fillStyle=g;
+      ctx.beginPath();ctx.arc(this.x,this.y,r,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+  }
+  /* sparkle dots */
+  class Spark{
+    constructor(){this.reset()}
+    reset(){
+      this.x=Math.random()*W;this.y=Math.random()*H;
+      this.life=0;this.maxLife=80+Math.random()*120;
+      this.r=.8+Math.random()*1.4;
+      const c=COLS[Math.floor(Math.random()*COLS.length)];
+      this.r_=c[0];this.g_=c[1];this.b_=c[2];
+    }
+    upd(){this.life++;if(this.life>this.maxLife)this.reset()}
+    draw(){
+      const t=this.life/this.maxLife;
+      const a=t<.3?t/.3:.7*(1-(t-.3)/.7);
+      ctx.save();ctx.globalAlpha=a*.7;
+      ctx.fillStyle=`rgb(${this.r_},${this.g_},${this.b_})`;
+      ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+  }
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight}
+  function init(){
+    resize();
+    const n=Math.min(Math.floor(W*H/14000),45);
+    orbs=Array.from({length:n},()=>new Orb());
+    sparks=Array.from({length:18},()=>new Spark());
+  }
+  let sparks=[],mouse={x:-999,y:-999};
+  document.addEventListener('mousemove',e=>{
+    const rect=cv.getBoundingClientRect();
+    mouse.x=e.clientX-rect.left;mouse.y=e.clientY-rect.top;
+  },{passive:true});
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    orbs.forEach(o=>{o.upd(mouse.x,mouse.y);o.draw()});
+    sparks.forEach(s=>{s.upd();s.draw()});
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener('resize',init,{passive:true});
+  init();loop();
+}
+
+/* ── Scroll Reveal ───────────────────────────────── */
+const rvo=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');rvo.unobserve(e.target)}});
+},{threshold:.07,rootMargin:'0px 0px -32px 0px'});
+document.querySelectorAll('.rv,.rv-l,.rv-r').forEach(el=>rvo.observe(el));
+
+/* ── Counter ─────────────────────────────────────── */
+function cnt(el){
+  const t=+el.dataset.cnt,dur=1600,t0=performance.now();
+  const tick=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(e*t);if(p<1)requestAnimationFrame(tick);else el.textContent=t};
+  requestAnimationFrame(tick);
+}
+const cObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('[data-cnt]').forEach(cnt);cObs.disconnect()}})},{threshold:.5});
+const ks=document.querySelector('.hkpi');if(ks)cObs.observe(ks);
+
+/* ── Skill stagger ───────────────────────────────── */
+const sObs=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('#skgrid .skc').forEach((c,i)=>setTimeout(()=>c.classList.add('on'),i*24));
+      sObs.disconnect();
+    }
+  });
+},{threshold:.04});
+const sg=document.getElementById('skgrid');if(sg)sObs.observe(sg);
+</script>
+</body>
+</html>
