@@ -55,7 +55,68 @@ class UsageTracker:
                     completed_at TEXT
                 )
             """)
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    user_id TEXT PRIMARY KEY,
+                    email TEXT UNIQUE NOT NULL,
+                    password_hash TEXT NOT NULL,
+                    plan TEXT DEFAULT 'starter',
+                    stripe_customer_id TEXT,
+                    stripe_subscription_id TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT
+                )
+            """)
             await db.commit()
+
+    # ── User CRUD ───────────────────────────────────────────────
+
+    async def create_user(self, user_id: str, email: str, password_hash: str) -> None:
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                """INSERT INTO users (user_id, email, password_hash, plan, created_at)
+                   VALUES (?, ?, ?, 'starter', ?)""",
+                (user_id, email, password_hash, datetime.utcnow().isoformat()),
+            )
+            await db.commit()
+
+    async def get_user_by_email(self, email: str) -> dict[str, Any] | None:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(
+                "SELECT user_id, email, password_hash, plan, created_at FROM users WHERE email = ?",
+                (email,),
+            ) as cur:
+                row = await cur.fetchone()
+                if row is None:
+                    return None
+                return {"user_id": row[0], "email": row[1], "password_hash": row[2],
+                        "plan": row[3], "created_at": row[4]}
+
+    async def get_user_by_id(self, user_id: str) -> dict[str, Any] | None:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(
+                "SELECT user_id, email, plan, created_at FROM users WHERE user_id = ?",
+                (user_id,),
+            ) as cur:
+                row = await cur.fetchone()
+                if row is None:
+                    return None
+                return {"user_id": row[0], "email": row[1], "plan": row[2], "created_at": row[3]}
+
+    async def update_user_plan(self, user_id: str, plan: str) -> None:
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "UPDATE users SET plan = ?, updated_at = ? WHERE user_id = ?",
+                (plan, datetime.utcnow().isoformat(), user_id),
+            )
+            await db.commit()
+
+    async def email_exists(self, email: str) -> bool:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(
+                "SELECT 1 FROM users WHERE email = ?", (email,)
+            ) as cur:
+                return await cur.fetchone() is not None
 
     async def register_company(self, company_id: str, config: dict[str, Any]) -> None:
         async with aiosqlite.connect(self.db_path) as db:

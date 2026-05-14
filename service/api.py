@@ -10,26 +10,36 @@ from typing import Any
 
 import anthropic
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Header
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 
 from agents import CompanyConfig, PresidentAgent, SkillRegistry
 from service.models import (
+    CheckoutRequest,
+    CheckoutResponse,
     CompanyDNARequest,
     CompanyDNAResponse,
     CompanyRegistrationRequest,
     CompanyResponse,
+    PlanInfo,
     SkillCatalogResponse,
     SkillInfo,
     StrengthAnalysisResponse,
     TaskRequest,
     TaskResponse,
     TaskStatusResponse,
+    Token,
+    UserCreate,
+    UserLogin,
+    UserProfile,
     UsageResponse,
 )
 from service.usage_tracker import UsageTracker
 from service import stream as stream_module
 from service.company_store import load_dna, save_dna, dna_to_context, list_companies, list_task_log
+from service import auth as auth_module
+from service import billing as billing_module
+from service import research as research_module
 
 load_dotenv()
 
@@ -286,6 +296,7 @@ async def get_company_dna(company_id: str) -> CompanyDNAResponse:
         goal_1y=dna.get("goal_1y", ""),
         plan=dna.get("plan", "starter"),
         has_strength_report=bool(dna.get("strength_report")),
+        strength_report=dna.get("strength_report") or None,
         updated_at=dna.get("updated_at"),
     )
 
@@ -342,6 +353,142 @@ async def analyze_strengths(company_id: str) -> StrengthAnalysisResponse:
     save_dna(company_id, {"strength_report": report})
 
     return StrengthAnalysisResponse(company_id=company_id, strength_report=report)
+
+
+# ── 認証エンドポイント ──────────────────────────────────────────
+
+@app.post("/auth/register", response_model=Token, status_code=201, summary="新規ユーザー登録")
+async def register(req: UserCreate) -> Token:
+    if await tracker.email_exists(req.email):
+        raise HTTPException(status_code=409, detail="このメールアドレスはすでに登録されています")
+    user_id = auth_module.new_user_id()
+    pw_hash = auth_module.hash_password(req.password)
+    await tracker.create_user(user_id, req.email, pw_hash)
+    token = auth_module.create_token(user_id, req.email, "starter")
+    return Token(access_token=token, user_id=user_id, email=req.email, plan="starter")
+
+
+@app.post("/auth/login", response_model=Token, summary="ログイン")
+async def login(req: UserLogin) -> Token:
+    user = await tracker.get_user_by_email(req.email)
+    if not user or not auth_module.verify_password(req.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="メールアドレスまたはパスワードが違います")
+    token = auth_module.create_token(user["user_id"], user["email"], user["plan"])
+    return Token(access_token=token, user_id=user["user_id"], email=user["email"], plan=user["plan"])
+
+
+@app.get("/auth/me", response_model=UserProfile, summary="ログイン中ユーザー情報")
+async def me(authorization: str = Header(default="")) -> UserProfile:
+    token = authorization.removeprefix("Bearer ").strip()
+    payload = auth_module.decode_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="認証が必要です")
+    user = await tracker.get_user_by_id(payload["sub"])
+    if not user:
+        raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
+    return UserProfile(**user)
+
+
+# ── 課金エンドポイント ──────────────────────────────────────────
+
+@app.get("/billing/plans", summary="プラン一覧")
+async def list_plans() -> dict:
+    return {
+        "plans": [
+            PlanInfo(id=pid, **info)
+            for pid, info in billing_module.PLAN_INFO.items()
+        ],
+        "stripe_configured": billing_module.is_configured(),
+    }
+
+
+@app.post("/billing/checkout", response_model=CheckoutResponse, summary="Stripeチェックアウト")
+async def create_checkout(req: CheckoutRequest, authorization: str = Header(default="")) -> CheckoutResponse:
+    token = authorization.removeprefix("Bearer ").strip()
+    payload = auth_module.decode_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="ログインが必要です")
+
+    if not billing_module.is_configured():
+        return CheckoutResponse(
+            url="",
+            configured=False,
+            message="Stripeキーが未設定です。.envにSTRIPE_SECRET_KEYを設定してください。",
+        )
+    try:
+        url = await billing_module.create_checkout_session(
+            user_id=payload["sub"],
+            email=payload["email"],
+            plan=req.plan,
+            success_url=req.success_url,
+            cancel_url=req.cancel_url,
+        )
+        return CheckoutResponse(url=url, configured=True)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/billing/webhook", summary="Stripe Webhook")
+async def stripe_webhook(request: Request) -> JSONResponse:
+    payload = await request.body()
+    sig = request.headers.get("stripe-signature", "")
+    try:
+        event = billing_module.verify_webhook(payload, sig)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    result = billing_module.extract_plan_from_event(event)
+    if result:
+        user_id, plan = result
+        if user_id:
+            await tracker.update_user_plan(user_id, plan)
+    return JSONResponse({"received": True})
+
+
+# ── 強み分析（SSEストリーミング版）─────────────────────────────
+
+@app.get("/v1/companies/{company_id}/analyze-strengths-stream",
+         summary="強み分析 SSEストリーミング（業界リサーチ付き）")
+async def analyze_strengths_stream(company_id: str) -> StreamingResponse:
+    dna = load_dna(company_id)
+    if not dna:
+        async def _err():
+            import json
+            yield f"data: {json.dumps({'type':'error','message':'先に企業DNAを保存してください'})}\n\n"
+        return StreamingResponse(_err(), media_type="text/event-stream")
+    return StreamingResponse(
+        research_module.run_research_stream(company_id, dna),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@app.get("/v1/dashboard", summary="ダッシュボード統計")
+async def dashboard_stats(company_id: str | None = None) -> dict:
+    from collections import defaultdict
+    recent = list_task_log(limit=500)
+    if company_id:
+        recent = [t for t in recent if t.get("company_id") == company_id]
+
+    by_company: dict[str, dict] = defaultdict(lambda: {"tasks": 0, "cost": 0.0, "name": ""})
+    for t in recent:
+        cid = t.get("company_id", "")
+        by_company[cid]["tasks"] += 1
+        by_company[cid]["cost"] += float(t.get("cost_ref") or 0)
+        by_company[cid]["name"] = t.get("company_name") or cid
+
+    companies = sorted(
+        [{"company_id": k, "company_name": v["name"], "task_count": v["tasks"],
+          "total_cost": round(v["cost"], 1)} for k, v in by_company.items()],
+        key=lambda x: -x["task_count"],
+    )
+    return {
+        "month": datetime.utcnow().strftime("%Y-%m"),
+        "total_tasks": len(recent),
+        "total_cost_ref": round(sum(float(t.get("cost_ref") or 0) for t in recent), 1),
+        "by_company": companies,
+        "recent": recent[:10],
+    }
 
 
 @app.get("/health")

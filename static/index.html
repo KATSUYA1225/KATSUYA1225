@@ -95,10 +95,52 @@
       </div>
       <div class="flex items-center gap-2">
         <span id="dna-status-badge" class="hidden text-xs bg-emerald-900/50 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-full">✓ DNA登録済</span>
-        <span class="text-xs bg-violet-900/50 text-violet-300 border border-violet-800 px-2.5 py-1 rounded-full">CLIモード / Proプラン</span>
+        <!-- 未ログイン -->
+        <div id="header-guest" class="flex gap-2">
+          <button onclick="openAuth('login')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition-colors">ログイン</button>
+          <button onclick="openAuth('register')" class="text-xs bg-violet-700 hover:bg-violet-600 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors">無料で始める</button>
+        </div>
+        <!-- ログイン済 -->
+        <div id="header-user" class="hidden flex items-center gap-2">
+          <span id="header-plan-badge" class="text-xs px-2 py-0.5 rounded-full border font-medium"></span>
+          <span id="header-email" class="text-xs text-slate-400"></span>
+          <button onclick="logout()" class="text-xs text-slate-600 hover:text-slate-400 transition-colors">ログアウト</button>
+        </div>
       </div>
     </div>
   </header>
+
+  <!-- ══ Auth Modal ════════════════════════════════════════════ -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+      <div class="flex gap-0 mb-5 border-b border-slate-800">
+        <button onclick="switchAuthTab('login')"    id="auth-tab-login"    class="auth-tab-btn flex-1 py-2 text-sm font-semibold text-violet-400 border-b-2 border-violet-500">ログイン</button>
+        <button onclick="switchAuthTab('register')" id="auth-tab-register" class="auth-tab-btn flex-1 py-2 text-sm font-semibold text-slate-500 border-b-2 border-transparent">新規登録</button>
+      </div>
+
+      <div id="auth-error" class="hidden text-xs text-red-400 bg-red-900/20 border border-red-900/50 rounded-lg px-3 py-2 mb-3"></div>
+
+      <div class="space-y-3">
+        <div id="auth-name-row" class="hidden">
+          <label class="block text-xs text-slate-400 mb-1">会社名（任意）</label>
+          <input id="auth-company-name" type="text" placeholder="株式会社〇〇">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">メールアドレス</label>
+          <input id="auth-email" type="email" placeholder="you@example.com">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">パスワード（6文字以上）</label>
+          <input id="auth-password" type="password" placeholder="••••••••">
+        </div>
+        <button id="auth-submit-btn" onclick="submitAuth()"
+          class="w-full bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">
+          ログイン
+        </button>
+        <button onclick="closeAuth()" class="w-full text-xs text-slate-500 hover:text-slate-400 py-1 transition-colors">キャンセル</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ══ Tab Bar ═══════════════════════════════════════════════ -->
   <div class="sticky top-[52px] z-10 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
@@ -266,14 +308,13 @@
         </div>
         <div id="skill-checkbox-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2"></div>
       </div>
-    </div>
 
-      <!-- Strength Analysis -->
+      <!-- Strength Analysis (SSE streaming) -->
       <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
             <span class="text-lg">🔍</span>
-            <h2 class="text-sm font-bold text-white">強み発見 — AI分析</h2>
+            <h2 class="text-sm font-bold text-white">強み発見 — AI業界リサーチ</h2>
           </div>
           <button onclick="analyzeStrengths()" id="analyze-btn"
             class="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 disabled:bg-slate-800 disabled:text-slate-600
@@ -282,7 +323,20 @@
             <span id="analyze-label">強みを分析する</span>
           </button>
         </div>
-        <p class="text-xs text-slate-500 mb-4">先に企業DNAを保存してから実行してください。業界トレンドと競合情報をもとに、本当の強みをAIが発見します。</p>
+        <p class="text-xs text-slate-500 mb-3">先にDNAを保存してから実行。DuckDuckGoで業界・競合情報をリアルタイム収集し、Claudeが強みを分析します。</p>
+
+        <!-- Research Progress -->
+        <div id="research-progress" class="hidden mb-4 space-y-2">
+          <div id="research-step-bar" class="flex gap-1">
+            <div id="rs-1" class="flex-1 h-1 rounded-full bg-slate-700"></div>
+            <div id="rs-2" class="flex-1 h-1 rounded-full bg-slate-700"></div>
+            <div id="rs-3" class="flex-1 h-1 rounded-full bg-slate-700"></div>
+            <div id="rs-4" class="flex-1 h-1 rounded-full bg-slate-700"></div>
+          </div>
+          <p id="research-status-msg" class="text-xs text-emerald-400 animate-blink"></p>
+          <div id="research-snippets" class="space-y-1.5"></div>
+        </div>
+
         <div id="strength-report" class="prose text-slate-200 text-sm leading-relaxed hidden"></div>
         <p id="strength-placeholder" class="text-xs text-slate-600 italic">まだ分析されていません</p>
       </div>
@@ -303,6 +357,9 @@
           <button onclick="setMarketPlan('enterprise')" id="mp-enterprise" class="market-plan-btn px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all">Enterprise</button>
         </div>
       </div>
+
+      <!-- Plan Upgrade Cards (shown when logged in) -->
+      <div id="plan-cards" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2"></div>
 
       <!-- Category Filter -->
       <div class="flex flex-wrap gap-2">
@@ -404,8 +461,6 @@
       </div>
     </div>
 
-  </main>
-
     <!-- ══════════════════════════════════════════════════════
          TAB: 履歴
     ══════════════════════════════════════════════════════════ -->
@@ -428,6 +483,8 @@
         <p class="text-sm text-slate-500 text-center py-8">タスクを実行すると履歴がここに表示されます</p>
       </div>
     </div>
+
+  </main>
 
   <!-- ══ Skill Detail Modal ════════════════════════════════════ -->
   <div id="skill-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur">
@@ -486,6 +543,7 @@
   let allSkills = []
   let presets = []
   let es = null
+  let currentUser = null  // {user_id, email, plan, access_token}
 
   /* ─── Tab Switching ──────────────────────────────────────── */
   function switchTab(name) {
@@ -724,43 +782,77 @@
     el.className = `text-xs ${cls}`
   }
 
-  /* ─── Strength Analysis ──────────────────────────────────── */
-  async function analyzeStrengths() {
+  /* ─── Strength Analysis (SSE streaming) ─────────────────── */
+  let researchEs = null
+
+  function analyzeStrengths() {
     const cid = document.getElementById('dna-company-select').value
     if (!cid) { alert('企業を選択してください'); return }
+
+    if (researchEs) { researchEs.close(); researchEs = null }
+
     const btn = document.getElementById('analyze-btn')
     btn.disabled = true
     document.getElementById('analyze-icon').textContent = '⏳'
-    document.getElementById('analyze-label').textContent = '分析中（30秒ほど）...'
+    document.getElementById('analyze-label').textContent = 'リサーチ中...'
     document.getElementById('strength-placeholder').classList.add('hidden')
+    document.getElementById('strength-report').classList.add('hidden')
+    document.getElementById('research-progress').classList.remove('hidden')
+    document.getElementById('research-snippets').innerHTML = ''
+    document.getElementById('research-status-msg').textContent = '準備中...'
+    ;[1,2,3,4].forEach(i => document.getElementById(`rs-${i}`).className = 'flex-1 h-1 rounded-full bg-slate-700')
 
-    try {
-      const res = await fetch(`/v1/companies/${cid}/analyze-strengths`, { method: 'POST' })
-      if (!res.ok) throw new Error(await res.text())
-      const data = await res.json()
-      showStrengthReport(data.strength_report)
-      document.getElementById('dna-status-badge').classList.remove('hidden')
-    } catch (e) {
-      document.getElementById('strength-placeholder').textContent = `エラー: ${e.message}`
-      document.getElementById('strength-placeholder').classList.remove('hidden')
-    } finally {
+    researchEs = new EventSource(`/v1/companies/${cid}/analyze-strengths-stream`)
+
+    researchEs.onmessage = e => {
+      if (e.data === '[DONE]') { researchEs.close(); researchEs = null; return }
+      const msg = JSON.parse(e.data)
+      switch (msg.type) {
+        case 'status': {
+          document.getElementById('research-status-msg').textContent = msg.message
+          if (msg.step) {
+            for (let i = 1; i <= msg.step; i++) {
+              document.getElementById(`rs-${i}`).className = 'flex-1 h-1 rounded-full bg-emerald-500'
+            }
+          }
+          break
+        }
+        case 'research': {
+          const snips = document.getElementById('research-snippets')
+          const div = document.createElement('div')
+          div.className = 'text-xs bg-slate-800/50 border border-slate-700 rounded-lg p-2.5'
+          div.innerHTML = `<span class="text-violet-400 font-medium">🔎 ${msg.label}</span><p class="text-slate-400 mt-1 leading-relaxed">${msg.content}</p>`
+          snips.appendChild(div)
+          break
+        }
+        case 'result': {
+          showStrengthReport(msg.content)
+          document.getElementById('research-status-msg').textContent = '✅ 分析完了'
+          document.getElementById('research-status-msg').classList.remove('animate-blink')
+          document.getElementById('dna-status-badge').classList.remove('hidden')
+          btn.disabled = false
+          document.getElementById('analyze-icon').textContent = '⚡'
+          document.getElementById('analyze-label').textContent = '再分析する'
+          break
+        }
+        case 'error': {
+          document.getElementById('strength-placeholder').textContent = `エラー: ${msg.message}`
+          document.getElementById('strength-placeholder').classList.remove('hidden')
+          btn.disabled = false
+          document.getElementById('analyze-icon').textContent = '⚡'
+          document.getElementById('analyze-label').textContent = '再分析する'
+          researchEs?.close(); researchEs = null
+          break
+        }
+      }
+    }
+
+    researchEs.onerror = () => {
+      researchEs?.close(); researchEs = null
       btn.disabled = false
       document.getElementById('analyze-icon').textContent = '⚡'
       document.getElementById('analyze-label').textContent = '再分析する'
     }
-  }
-
-  async function loadStrengthReport(cid) {
-    try {
-      const res = await fetch(`/v1/companies/${cid}/dna`)
-      if (!res.ok) return
-      const dna = await res.json()
-      if (dna.has_strength_report) {
-        const r2 = await fetch(`/v1/companies/${cid}/dna`)
-        // Re-fetch to get strength_report — it's not in CompanyDNAResponse, so we inline here
-        // The strength_report is shown via the analyze endpoint, load from analyze-strengths
-      }
-    } catch {}
   }
 
   function showStrengthReport(text) {
@@ -1074,7 +1166,170 @@
   })
   document.getElementById('mp-business').classList.add('bg-violet-900','text-violet-300','border-violet-700')
 
+  /* ─── Auth ───────────────────────────────────────────────── */
+  let authMode = 'login'
+
+  function openAuth(mode) {
+    authMode = mode
+    document.getElementById('auth-modal').classList.remove('hidden')
+    document.getElementById('auth-error').classList.add('hidden')
+    document.getElementById('auth-email').value = ''
+    document.getElementById('auth-password').value = ''
+    document.getElementById('auth-company-name').value = ''
+    switchAuthTab(mode)
+  }
+
+  function closeAuth() {
+    document.getElementById('auth-modal').classList.add('hidden')
+  }
+
+  document.getElementById('auth-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeAuth()
+  })
+
+  function switchAuthTab(tab) {
+    authMode = tab
+    const loginBtn  = document.getElementById('auth-tab-login')
+    const regBtn    = document.getElementById('auth-tab-register')
+    const submitBtn = document.getElementById('auth-submit-btn')
+    const nameRow   = document.getElementById('auth-name-row')
+    const active  = 'auth-tab-btn flex-1 py-2 text-sm font-semibold text-violet-400 border-b-2 border-violet-500'
+    const passive = 'auth-tab-btn flex-1 py-2 text-sm font-semibold text-slate-500 border-b-2 border-transparent'
+    if (tab === 'login') {
+      loginBtn.className = active; regBtn.className = passive
+      submitBtn.textContent = 'ログイン'; nameRow.classList.add('hidden')
+    } else {
+      regBtn.className = active; loginBtn.className = passive
+      submitBtn.textContent = '無料で始める'; nameRow.classList.remove('hidden')
+    }
+  }
+
+  async function submitAuth() {
+    const email    = document.getElementById('auth-email').value.trim()
+    const password = document.getElementById('auth-password').value
+    const errorEl  = document.getElementById('auth-error')
+    const submitBtn = document.getElementById('auth-submit-btn')
+    if (!email || !password) {
+      errorEl.textContent = 'メールアドレスとパスワードを入力してください'
+      errorEl.classList.remove('hidden'); return
+    }
+    submitBtn.disabled = true
+    submitBtn.textContent = '処理中...'
+    errorEl.classList.add('hidden')
+    try {
+      const url  = authMode === 'login' ? '/auth/login' : '/auth/register'
+      const body = { email, password }
+      if (authMode === 'register') body.company_name = document.getElementById('auth-company-name').value.trim()
+      const res  = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
+      const data = await res.json()
+      if (!res.ok) {
+        errorEl.textContent = data.detail || 'エラーが発生しました'
+        errorEl.classList.remove('hidden'); return
+      }
+      localStorage.setItem('ai_os_token', data.access_token)
+      localStorage.setItem('ai_os_user', JSON.stringify({ user_id:data.user_id, email:data.email, plan:data.plan }))
+      setCurrentUser({ user_id:data.user_id, email:data.email, plan:data.plan, access_token:data.access_token })
+      closeAuth()
+    } catch {
+      errorEl.textContent = '通信エラーが発生しました'; errorEl.classList.remove('hidden')
+    } finally {
+      submitBtn.disabled = false
+      submitBtn.textContent = authMode === 'login' ? 'ログイン' : '無料で始める'
+    }
+  }
+
+  function setCurrentUser(user) {
+    currentUser = user
+    const guestEl = document.getElementById('header-guest')
+    const userEl  = document.getElementById('header-user')
+    if (user) {
+      guestEl.classList.add('hidden'); userEl.classList.remove('hidden')
+      document.getElementById('header-email').textContent = user.email
+      const badge = document.getElementById('header-plan-badge')
+      const cls = { starter:'plan-badge-starter', growth:'plan-badge-growth', business:'plan-badge-business', enterprise:'plan-badge-enterprise' }
+      const lbl = { starter:'Starter', growth:'Growth', business:'Business', enterprise:'Enterprise' }
+      badge.className = `text-xs px-2 py-0.5 rounded-full border font-medium ${cls[user.plan] || 'plan-badge-starter'}`
+      badge.textContent = lbl[user.plan] || user.plan
+      loadPlanCards()
+    } else {
+      guestEl.classList.remove('hidden'); userEl.classList.add('hidden')
+      document.getElementById('plan-cards').classList.add('hidden')
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('ai_os_token')
+    localStorage.removeItem('ai_os_user')
+    setCurrentUser(null)
+    currentUser = null
+  }
+
+  /* ─── Billing / Plan Cards ───────────────────────────────── */
+  async function loadPlanCards() {
+    if (!currentUser) return
+    const res  = await fetch('/billing/plans')
+    const data = await res.json()
+    const container = document.getElementById('plan-cards')
+    const userPlanIdx = PLAN_ORDER.indexOf(currentUser.plan)
+    const upgrades = data.plans.filter(p => {
+      const idx = PLAN_ORDER.indexOf(p.id)
+      return idx > userPlanIdx && p.id !== 'enterprise'
+    })
+    if (upgrades.length === 0) { container.classList.add('hidden'); return }
+    container.innerHTML = ''
+    upgrades.forEach(p => {
+      const card = document.createElement('div')
+      card.className = 'bg-slate-900 border border-slate-700 rounded-xl p-4 flex flex-col gap-2'
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-bold text-white">${p.name}</span>
+          <span class="text-xs text-violet-300">¥${p.price_jpy.toLocaleString()}/月</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">${p.description}</p>
+        <ul class="space-y-1">${(p.features||[]).slice(0,3).map(f=>`<li class="text-xs text-slate-300 flex gap-1.5 items-start"><span class="text-emerald-400 flex-shrink-0">✓</span>${f}</li>`).join('')}</ul>
+        <button onclick="upgradePlan('${p.id}')"
+          class="mt-auto bg-violet-700 hover:bg-violet-600 text-white text-xs font-semibold py-2 rounded-lg transition-colors">
+          このプランにアップグレード
+        </button>`
+      container.appendChild(card)
+    })
+    container.classList.remove('hidden')
+  }
+
+  async function upgradePlan(plan) {
+    if (!currentUser) { openAuth('login'); return }
+    const res  = await fetch('/billing/checkout', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${currentUser.access_token}` },
+      body: JSON.stringify({ plan, success_url: location.origin+'/?payment=success', cancel_url: location.origin+'/?payment=cancel' })
+    })
+    const data = await res.json()
+    if (!data.configured) { alert(data.message || 'Stripe未設定: .envにSTRIPE_SECRET_KEYを設定してください'); return }
+    if (data.url) location.href = data.url
+  }
+
+  /* ─── Load existing strength report ─────────────────────── */
+  async function loadStrengthReport(cid) {
+    try {
+      const res = await fetch(`/v1/companies/${cid}/dna`)
+      if (!res.ok) return
+      const dna = await res.json()
+      if (dna.strength_report) showStrengthReport(dna.strength_report)
+    } catch {}
+  }
+
   /* ─── Init ───────────────────────────────────────────────── */
+  ;(function restoreSession() {
+    const savedToken = localStorage.getItem('ai_os_token')
+    const savedUser  = localStorage.getItem('ai_os_user')
+    if (savedToken && savedUser) {
+      try {
+        const user = JSON.parse(savedUser)
+        setCurrentUser({ ...user, access_token: savedToken })
+      } catch { localStorage.removeItem('ai_os_token'); localStorage.removeItem('ai_os_user') }
+    }
+  })()
+
   loadPresets()
 </script>
 </body>

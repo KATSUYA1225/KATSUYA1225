@@ -73,6 +73,7 @@ class CompanyDNAResponse(BaseModel):
     goal_1y: str
     plan: str
     has_strength_report: bool
+    strength_report: str | None = None
     updated_at: str | None = None
 
 
@@ -132,3 +133,53 @@ class UsageResponse(BaseModel):
 class SkillCatalogResponse(BaseModel):
     skills: list[SkillInfo]
     total_count: int
+
+
+# ── 認証 ──────────────────────────────────────────────────────
+
+class UserCreate(BaseModel):
+    email: str = Field(..., min_length=5)
+    password: str = Field(..., min_length=6)
+    company_name: str = ""
+
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user_id: str
+    email: str
+    plan: str
+
+
+class UserProfile(BaseModel):
+    user_id: str
+    email: str
+    plan: str
+    created_at: str
+
+
+# ── 課金 ──────────────────────────────────────────────────────
+
+class PlanInfo(BaseModel):
+    id: str
+    name: str
+    price_jpy: int
+    description: str
+    features: list[str]
+
+
+class CheckoutRequest(BaseModel):
+    plan: str
+    success_url: str
+    cancel_url: str
+
+
+class CheckoutResponse(BaseModel):
+    url: str
+    configured: bool
+    message: str = ""
