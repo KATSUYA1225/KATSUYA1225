@@ -1,0 +1,23 @@
+template_id: retail_ec
+display_name: "小売・EC"
+description: "実店舗・ECサイト・D2Cブランド向け。在庫・集客・顧客維持・SNS活用を重視。"
+
+suggested_company_config:
+  industry: "小売 / EC / D2Cブランド"
+  language: ja
+  tone: professional
+  company_mission: "お客様に価値ある商品と体験を届ける"
+
+active_addons:
+  - sales
+  - analytics
+  - customer_success
+
+bundle_price_jpy: 9800
+original_price_jpy: 8940
+discount_pct: 18
+
+template_context: |
+  このチームはEC・小売ビジネスの収益最大化を支援します。
+  売上・転換率・リピート率・顧客単価（AOV）を常に意識した提案をしてください。
+  季節性・在庫コスト・物流も考慮した現実的な施策を優先します。

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI企業OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    /* Markdown styles */
+    .prose h1 { font-size:1.4rem; font-weight:700; margin:1rem 0 .5rem; color:#f1f5f9; }
+    .prose h2 { font-size:1.15rem; font-weight:600; margin:.9rem 0 .4rem; color:#a78bfa; }
+    .prose h3 { font-size:1rem; font-weight:600; margin:.75rem 0 .35rem; color:#c4b5fd; }
+    .prose p  { margin:.45rem 0; line-height:1.75; }
+    .prose ul { list-style:disc; padding-left:1.4rem; margin:.4rem 0; }
+    .prose ol { list-style:decimal; padding-left:1.4rem; margin:.4rem 0; }
+    .prose li { margin:.2rem 0; }
+    .prose table { width:100%; border-collapse:collapse; margin:.75rem 0; font-size:.8rem; }
+    .prose th { background:#1e293b; padding:.45rem .6rem; text-align:left; border:1px solid #334155; font-weight:600; }
+    .prose td { padding:.4rem .6rem; border:1px solid #334155; }
+    .prose tr:nth-child(even) td { background:#0f172a; }
+    .prose code { background:#1e293b; padding:.1rem .3rem; border-radius:.25rem; font-size:.8rem; font-family:monospace; }
+    .prose pre  { background:#0f172a; padding:.9rem 1rem; border-radius:.5rem; overflow-x:auto; margin:.6rem 0; border:1px solid #1e293b; }
+    .prose pre code { background:none; padding:0; font-size:.8rem; }
+    .prose strong { color:#e2e8f0; font-weight:600; }
+    .prose em { color:#94a3b8; }
+    .prose blockquote { border-left:3px solid #7c3aed; padding-left:.9rem; color:#94a3b8; margin:.6rem 0; }
+    .prose hr { border-color:#1e293b; margin:1rem 0; }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .animate-blink { animation:blink 1.2s ease-in-out infinite; }
+    .animate-spin-slow { animation:spin 1.4s linear infinite; display:inline-block; }
+
+    .dept-card { transition:all .25s ease; }
+    .dept-card.done  { border-color:#059669 !important; }
+    .dept-card.error { border-color:#dc2626 !important; }
+    .dept-card.running { border-color:#d97706 !important; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-10 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur px-5 py-3.5">
+    <div class="max-w-3xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="text-2xl">🏢</div>
+        <div>
+          <h1 class="text-base font-bold text-white leading-tight">AI企業OS</h1>
+          <p class="text-xs text-slate-500 leading-tight">AI経営チームをサブスクで — Future Share Collective</p>
+        </div>
+      </div>
+      <span class="text-xs bg-violet-900/50 text-violet-300 border border-violet-800 px-2.5 py-1 rounded-full">CLIモード / Proプラン</span>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-5 py-7 space-y-5">
+
+    <!-- ── Input Card ─────────────────────────────────────── -->
+    <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
+
+      <!-- Company select -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">企業を選択</label>
+        <select id="company-select"
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100
+                 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50">
+          <option value="">読み込み中...</option>
+        </select>
+        <p id="company-mission" class="text-xs text-slate-500 mt-1.5 min-h-[1rem]"></p>
+      </div>
+
+      <!-- Task input -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">社長へのタスク</label>
+        <textarea id="task-input" rows="3"
+          placeholder="例: SNS戦略を立案し、売上向上につながる具体的な施策を3つ提案してください。"
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100
+                 placeholder-slate-600 focus:outline-none focus:border-violet-500 focus:ring-1
+                 focus:ring-violet-500/50 resize-none leading-relaxed"></textarea>
+
+        <!-- Example tasks -->
+        <div class="flex flex-wrap gap-1.5 mt-2">
+          <span class="text-xs text-slate-500">例:</span>
+          <button onclick="setTask(this)" data-task="SNS戦略を立案し、売上向上につながる具体的な施策を3つ提案してください。"
+            class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">
+            SNS戦略
+          </button>
+          <button onclick="setTask(this)" data-task="新規顧客獲得コストを下げるための施策を3つ立案してください。"
+            class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">
+            CAC削減
+          </button>
+          <button onclick="setTask(this)" data-task="来月の売上を20%向上させるための具体的なアクションプランを作成してください。"
+            class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">
+            売上20%UP
+          </button>
+          <button onclick="setTask(this)" data-task="競合他社との差別化ポイントを整理し、強みを活かしたブランド戦略を提案してください。"
+            class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md transition-colors">
+            ブランド戦略
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer row -->
+      <div class="flex items-center justify-between pt-1">
+        <div class="text-xs text-slate-500">
+          参考API価格: <span class="text-slate-400">¥20〜40</span>  ／  実際の課金:
+          <span class="text-emerald-400 font-medium">¥0</span>（Proプラン）
+        </div>
+        <button id="run-btn" onclick="run()"
+          class="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 active:bg-violet-700
+                 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed
+                 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
+          <span id="btn-icon">▶</span>
+          <span id="btn-label">実行</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Progress Card ──────────────────────────────────── -->
+    <div id="progress-card" class="bg-slate-900 rounded-2xl border border-slate-800 p-5 hidden">
+      <div class="flex items-center gap-2 mb-4">
+        <span id="progress-icon" class="text-base">⚡</span>
+        <h2 class="text-sm font-semibold text-slate-300" id="progress-title">進行状況</h2>
+        <div id="spinner" class="ml-auto text-violet-400 text-xs animate-spin-slow hidden">⟳</div>
+      </div>
+
+      <p id="status-msg" class="text-xs text-violet-300 mb-4 min-h-[1rem]"></p>
+
+      <div id="dept-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
+    </div>
+
+    <!-- ── Result Card ────────────────────────────────────── -->
+    <div id="result-card" class="bg-slate-900 rounded-2xl border border-slate-800 p-5 hidden">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+        <h2 class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+          <span>📋</span> 社長決裁
+        </h2>
+        <div id="cost-display" class="text-xs text-slate-500"></div>
+      </div>
+      <div id="result-content" class="prose text-slate-200 text-sm leading-relaxed"></div>
+    </div>
+
+  </main>
+
+  <script>
+    const DEPT_ICONS = {
+      marketing:'📊', sns_pr:'📱', sales:'💼', finance:'💰',
+      analytics:'📈', product:'🛠️', hr:'👥', customer_success:'🤝',
+      legal:'⚖️', strategy:'🎯', president:'👑'
+    }
+    const DEPT_LABELS = {
+      marketing:'マーケティング', sns_pr:'SNS広報', sales:'営業',
+      finance:'財務', analytics:'データ分析', product:'プロダクト',
+      hr:'HR', customer_success:'CS', legal:'法務', strategy:'戦略'
+    }
+
+    let es = null
+    let presets = []
+
+    /* ── 初期化 ──────────────────────────────────────────── */
+    async function loadPresets() {
+      const res = await fetch('/v1/companies/presets')
+      const data = await res.json()
+      presets = data.presets
+      const sel = document.getElementById('company-select')
+      sel.innerHTML = ''
+      presets.forEach(p => {
+        const opt = document.createElement('option')
+        opt.value = p.id
+        opt.textContent = `${p.name}（${p.industry}）`
+        sel.appendChild(opt)
+      })
+      updateMission()
+    }
+
+    function updateMission() {
+      const val = document.getElementById('company-select').value
+      const p = presets.find(x => x.id === val)
+      document.getElementById('company-mission').textContent = p ? p.mission : ''
+    }
+
+    document.getElementById('company-select').addEventListener('change', updateMission)
+
+    function setTask(btn) {
+      document.getElementById('task-input').value = btn.dataset.task
+    }
+
+    /* ── UI状態管理 ──────────────────────────────────────── */
+    function setRunning(on) {
+      const btn = document.getElementById('run-btn')
+      btn.disabled = on
+      document.getElementById('btn-icon').textContent  = on ? '⏳' : '▶'
+      document.getElementById('btn-label').textContent = on ? '実行中...' : '実行'
+      document.getElementById('spinner').classList.toggle('hidden', !on)
+    }
+
+    function setStatus(msg) {
+      document.getElementById('status-msg').textContent = msg
+    }
+
+    function showCard(id)  { document.getElementById(id).classList.remove('hidden') }
+    function hideCard(id)  { document.getElementById(id).classList.add('hidden') }
+    function resetCards()  {
+      hideCard('result-card')
+      document.getElementById('dept-grid').innerHTML = ''
+      document.getElementById('progress-icon').textContent = '⚡'
+      document.getElementById('progress-title').textContent = '進行状況'
+    }
+
+    /* ── 部門カード ──────────────────────────────────────── */
+    function renderDepts(departments) {
+      const grid = document.getElementById('dept-grid')
+      grid.innerHTML = ''
+      departments.forEach(dep => {
+        const icon  = DEPT_ICONS[dep]  || '🔷'
+        const label = DEPT_LABELS[dep] || dep
+        const card = document.createElement('div')
+        card.id = `dept-${dep}`
+        card.className = 'dept-card running bg-slate-800/80 border border-amber-800/60 rounded-xl p-3 flex items-center gap-2.5'
+        card.innerHTML = `
+          <span class="text-xl flex-shrink-0">${icon}</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-xs font-semibold text-slate-200 truncate">${label}</div>
+            <div class="text-xs text-amber-400 mt-0.5 dept-status animate-blink">実行中...</div>
+          </div>`
+        grid.appendChild(card)
+      })
+    }
+
+    function markDeptDone(dep, display, status) {
+      const card = document.getElementById(`dept-${dep}`)
+      if (!card) return
+      const ok = status === 'done'
+      card.className = `dept-card ${ok ? 'done' : 'error'} bg-slate-800/80 border rounded-xl p-3 flex items-center gap-2.5`
+      const el = card.querySelector('.dept-status')
+      if (el) {
+        el.className = `text-xs mt-0.5 dept-status ${ok ? 'text-emerald-400' : 'text-red-400'}`
+        el.textContent = ok ? '✓ 完了' : '✗ エラー'
+      }
+    }
+
+    /* ── 実行 ────────────────────────────────────────────── */
+    async function run() {
+      const company = document.getElementById('company-select').value
+      const task    = document.getElementById('task-input').value.trim()
+      if (!company || !task) { alert('企業とタスクを入力してください'); return }
+      if (es) { es.close(); es = null }
+
+      setRunning(true)
+      resetCards()
+      showCard('progress-card')
+      setStatus('接続中...')
+
+      const url = `/v1/stream?company=${encodeURIComponent(company)}&task=${encodeURIComponent(task)}`
+      es = new EventSource(url)
+
+      es.onmessage = (e) => {
+        if (e.data === '[DONE]') {
+          es.close(); es = null
+          setRunning(false)
+          setStatus('全工程が完了しました')
+          document.getElementById('progress-icon').textContent = '✅'
+          document.getElementById('progress-title').textContent = '完了'
+          return
+        }
+        try {
+          const msg = JSON.parse(e.data)
+          if      (msg.type === 'status')      { setStatus(msg.message) }
+          else if (msg.type === 'delegations') { renderDepts(msg.departments) }
+          else if (msg.type === 'dept_done')   { markDeptDone(msg.department, msg.display, msg.status) }
+          else if (msg.type === 'result')      { showResult(msg.content, msg.cost_ref) }
+          else if (msg.type === 'error')       {
+            setStatus('⚠ ' + msg.message)
+            setRunning(false)
+          }
+        } catch { /* ignore parse errors */ }
+      }
+
+      es.onerror = () => {
+        es.close(); es = null
+        setRunning(false)
+        setStatus('⚠ 接続エラーが発生しました。もう一度お試しください。')
+      }
+    }
+
+    function showResult(content, costRef) {
+      showCard('result-card')
+      document.getElementById('result-content').innerHTML = marked.parse(content)
+      document.getElementById('cost-display').textContent =
+        `参考API価格: ¥${costRef}（Proプラン: ¥0）`
+      document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    /* ── キーボードショートカット ───────────────────────── */
+    document.getElementById('task-input').addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') run()
+    })
+
+    loadPresets()
+  </script>
+</body>
+</html>

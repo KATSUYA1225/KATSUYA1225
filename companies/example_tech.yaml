@@ -1,0 +1,23 @@
+config_version: "1.0"
+company_id: "tech-demo-001"
+company_name: "TechNova株式会社"
+industry: "SaaSスタートアップ / B2B"
+language: ja
+tone: professional
+
+company_mission: "中小企業のDXを加速するSaaSプラットフォームを提供する"
+
+company_context: |
+  設立: 2023年
+  従業員数: 8名
+  主力製品: 在庫管理SaaS（月額¥9,800〜）
+  主要顧客: 製造業・卸売業の中小企業
+  現在の課題: 新規顧客獲得コスト（CAC）が高い・解約率が月5%
+
+active_addons:
+  - sales
+  - finance
+  - product
+  - analytics
+
+log_dir: "logs/tech-demo"

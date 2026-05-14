@@ -1,0 +1,24 @@
+template_id: consulting
+display_name: "コンサルティング"
+description: "経営・IT・人事コンサルティング企業向け。提案書品質・知識共有・案件管理を重視。"
+
+suggested_company_config:
+  industry: "コンサルティング / プロフェッショナルサービス"
+  language: ja
+  tone: formal
+  company_mission: "クライアントの経営課題を解決し、持続的な成長を支援する"
+
+active_addons:
+  - strategy
+  - finance
+  - sales
+  - legal
+
+bundle_price_jpy: 9800
+original_price_jpy: 13940
+discount_pct: 30
+
+template_context: |
+  このチームはコンサルティングファームの業務を支援します。
+  提案書・分析レポート・クライアント向けコミュニケーションは論理的かつ説得力のある構成にしてください。
+  フレームワーク（MECE・ロジックツリー・仮説思考）を活用した提案を重視します。

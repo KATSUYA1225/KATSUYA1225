@@ -1,0 +1,34 @@
+config_version: "1.0"
+company_id: "liverty-realm-001"
+company_name: "Liverty Realm"
+industry: "EC / クリエイター支援 / 苔テラリウム・アクアリウム"
+language: ja
+tone: casual
+
+company_mission: "クリエイターが自分らしく生きられる経済圏を作る"
+
+company_context: |
+  設立: 2024年
+  ブランドコンセプト: 容器の中に自由な世界を創造するブランド
+  主力商品: 苔テラリウム・アクアリウム（EC販売）
+  社会ミッション: 不登校の子供たち・障がいのある子供たち・収益化できていないクリエイターの支援
+  収益モデル: EC売上 + クリエイターへのレベニューシェア
+  親組織: Future Share Collective（FSC）
+
+active_addons:
+  - sales
+  - analytics
+  - customer_success
+  - product
+
+template_context: |
+  Liverty Realmは「容器の中に自由な世界を創造するブランド」です。
+
+  表側: 苔テラリウム・アクアリウムの幻想的な世界観・アート・癒しをEC販売
+  裏側: クリエイター育成・不登校の子供たちの挑戦支援・収益化できていないデザイナーのサポート
+
+  FSCの思想「小さく始め、分かち合い、再投資する」に基づき行動します。
+  売上の一部をクリエイターに還元するレベニューシェアモデルを前提としています。
+  提案は収益性と社会的ミッションを常に両立させること。
+
+log_dir: "logs/liverty-realm"

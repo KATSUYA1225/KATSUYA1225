@@ -1,0 +1,32 @@
+template_id: liverty_realm
+display_name: "Liverty Realm / クリエイター支援ブランド"
+description: "苔テラリウム・アクアリウムブランド + クリエイター育成・不登校支援・EC販売。FSC自社テンプレート。"
+
+suggested_company_config:
+  industry: "EC / クリエイター支援 / ライフスタイルブランド"
+  language: ja
+  tone: casual
+  company_mission: "クリエイターが自分らしく生きられる経済圏を作る"
+
+active_addons:
+  - sales
+  - analytics
+  - customer_success
+  - product
+
+bundle_price_jpy: 8800
+original_price_jpy: 11920
+discount_pct: 26
+
+template_context: |
+  Liverty Realmは「容器の中に自由な世界を創造するブランド」です。
+
+  表側: 苔テラリウム・アクアリウムの幻想的な世界観・アート・癒しをEC販売
+  裏側: クリエイター育成・不登校の子供たちの挑戦支援・収益化できていないデザイナーのサポート
+
+  Future Share Collective（FSC）の思想OS「小さく始め、分かち合い、再投資する」に基づき行動します。
+  売上の一部をクリエイターに還元するレベニューシェアモデルを前提としています。
+  感性・手仕事・世界観を持つ人が自信と収入を得られる仕組みを作ることを最優先にしてください。
+
+  提案は現実的な収益性と社会的ミッションを常に両立させること。
+  「理念だけで持続しない」構造は避け、FSC Methodの循環（小さく始める→透明化→分かち合う→再投資→改善）を体現してください。

@@ -1,0 +1,25 @@
+template_id: tech_startup
+display_name: "テックスタートアップ"
+description: "SaaS・アプリ・プラットフォーム系スタートアップ向け。製品開発・グロース・資金調達を重視。"
+
+suggested_company_config:
+  industry: "テック / SaaS / スタートアップ"
+  language: ja
+  tone: professional
+  company_mission: "テクノロジーで業界の課題を解決するプロダクトを作る"
+
+active_addons:
+  - sales
+  - finance
+  - hr
+  - product
+  - analytics
+
+bundle_price_jpy: 9800
+original_price_jpy: 11940
+discount_pct: 18
+
+template_context: |
+  このチームはテックスタートアップの成長を支援します。
+  MVP開発・PMF検証・スケーリングの各フェーズに応じた意思決定を優先します。
+  投資家向けの説明責任・数値根拠・スピードを重視した提案を心がけてください。
