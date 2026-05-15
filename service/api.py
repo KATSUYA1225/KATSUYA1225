@@ -11,6 +11,7 @@ from typing import Any
 import anthropic
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Header
+from pydantic import BaseModel
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -255,6 +256,46 @@ async def register_page() -> HTMLResponse:
 @app.get("/early", response_class=RedirectResponse, include_in_schema=False)
 async def early_redirect() -> RedirectResponse:
     return RedirectResponse(url="/register", status_code=302)
+
+
+@app.get("/privacy", response_class=HTMLResponse, include_in_schema=False)
+async def privacy_page() -> HTMLResponse:
+    html = (Path(__file__).parent.parent / "static" / "privacy.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html)
+
+
+class EarlyRegistration(BaseModel):
+    name: str
+    email: str
+    company: str | None = None
+    industry: str | None = None
+    plan: str | None = None
+
+
+@app.post("/api/register", summary="先行登録", include_in_schema=False)
+async def api_register(req: EarlyRegistration) -> JSONResponse:
+    """Formspree のバックアップ。登録情報をローカルに保存しメール通知を送る。"""
+    import json
+    from datetime import datetime as _dt
+    entry = {
+        "name": req.name,
+        "email": req.email,
+        "company": req.company or "",
+        "industry": req.industry or "",
+        "plan": req.plan or "",
+        "registered_at": _dt.utcnow().isoformat(),
+    }
+    reg_file = Path(__file__).parent.parent / "data" / "registrations.jsonl"
+    reg_file.parent.mkdir(exist_ok=True)
+    with reg_file.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+    from service.mailer import send_notification
+    send_notification(
+        subject=f"【先行登録】{req.name}さんが登録しました",
+        body="\n".join(f"{k}: {v}" for k, v in entry.items()),
+    )
+    return JSONResponse({"ok": True})
 
 
 @app.get("/app", response_class=HTMLResponse, include_in_schema=False)

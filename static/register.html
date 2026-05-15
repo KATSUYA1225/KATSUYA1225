@@ -26,6 +26,8 @@
   gtag('js', new Date());
   gtag('config', 'G-XXXXXXXXXX');
 </script> -->
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="canonical" href="https://ai-kigyo-os.onrender.com/register">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
@@ -388,6 +390,9 @@ body{background:#030a14;color:#e8f0ff;font-family:'Noto Sans JP',sans-serif;over
         <button type="submit" class="form-submit" id="submit-btn">
           先行登録する（無料）→
         </button>
+        <p style="font-size:.7rem;color:var(--t3);text-align:center;margin-top:12px">
+          登録することで<a href="/privacy" style="color:var(--t3);text-decoration:underline" target="_blank">プライバシーポリシー</a>に同意したものとみなします
+        </p>
       </form>
 
       <div class="form-success" id="form-success">
@@ -681,30 +686,38 @@ document.getElementById('signup-form').addEventListener('submit', async function
     timestamp: new Date().toISOString()
   };
 
+  const showSuccess = () => {
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+    const slots = document.getElementById('slots-left');
+    if(slots) slots.textContent = Math.max(0, parseInt(slots.textContent) - 1);
+  };
+
+  /* 1st: Formspree */
   try {
-    /* Formspree エンドポイント（後で設定） */
     const res = await fetch('https://formspree.io/f/xeoqkqzn', {
       method: 'POST',
       headers: {'Content-Type':'application/json', 'Accept':'application/json'},
       body: JSON.stringify(body)
     });
-    if(res.ok){
-      document.getElementById('signup-form').style.display = 'none';
-      document.getElementById('form-success').style.display = 'block';
-      /* 残り枠を減らす（デモ） */
-      const slots = document.getElementById('slots-left');
-      if(slots) slots.textContent = Math.max(0, parseInt(slots.textContent) - 1);
-    } else {
-      throw new Error('送信エラー');
-    }
-  } catch(err) {
-    /* フォールバック：メール送信 */
-    const subject = encodeURIComponent('【AI企業OS】先行登録申込');
-    const bodyText = encodeURIComponent(`お名前: ${body.name}\nメール: ${body.email}\n会社名: ${body.company}\n業種: ${body.industry}\nプラン: ${body.plan}`);
-    window.location.href = `mailto:gp.k122517@gmail.com?subject=${subject}&body=${bodyText}`;
-    document.getElementById('signup-form').style.display = 'none';
-    document.getElementById('form-success').style.display = 'block';
-  }
+    if(res.ok){ showSuccess(); return; }
+  } catch(_){}
+
+  /* 2nd: 自前 API */
+  try {
+    const res2 = await fetch('/api/register', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if(res2.ok){ showSuccess(); return; }
+  } catch(_){}
+
+  /* 最終フォールバック：mailto */
+  const subject = encodeURIComponent('【AI企業OS】先行登録申込');
+  const bodyText = encodeURIComponent(`お名前: ${body.name}\nメール: ${body.email}\n会社名: ${body.company}\n業種: ${body.industry}\nプラン: ${body.plan}`);
+  window.location.href = `mailto:gp.k122517@gmail.com?subject=${subject}&body=${bodyText}`;
+  showSuccess();
 });
 
 /* ── Slots countdown (simulate) ── */
