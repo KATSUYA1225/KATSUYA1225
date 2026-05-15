@@ -12,6 +12,7 @@ import anthropic
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Header
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 
 from agents import CompanyConfig, PresidentAgent, SkillRegistry
 from service.models import (
@@ -64,6 +65,10 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+_static_dir = Path(__file__).parent.parent / "static"
+if _static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
 
 
 # ── ヘルパー ────────────────────────────────────────────────
