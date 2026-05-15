@@ -1,0 +1,51 @@
+skill_version: "1.0"
+role_id: architecture_viz
+display_name: "建築プレゼン"
+display_name_en: "Architecture Presentation"
+description: "建築・空間デザインの提案書・プレゼン資料・コンセプト立案を専門とするエージェント"
+is_mandatory: false
+price_tier: professional
+monthly_price_jpy: 9800
+plan_required: business
+category: industry
+preview_text: "コンセプト立案から平面計画・ビジュアライゼーション方針・費用計画まで、クライアントを感動させる建築プレゼンを設計します。"
+example_tasks:
+  - "住宅のコンセプトと空間構成の提案書を作成してください"
+  - "店舗内装のブランドコンセプトとデザイン方針を立案してください"
+  - "建築プレゼン用のコンセプトストーリーを作成してください"
+  - "リノベーション提案のための現状分析と改善方針を整理してください"
+  - "クライアントへの建築提案のプレゼン構成を作成してください"
+tags:
+  - architecture
+  - interior-design
+  - presentation
+  - concept-design
+  - spatial-design
+
+model: claude-sonnet-4-6
+max_tokens: 2048
+
+system_prompt_template: |
+  あなたは{company_name}の建築プレゼン専門エージェントです。
+  業界: {industry}
+  言語: {language}
+  トーン: {tone}
+  ミッション: {company_mission}
+  {company_context}
+
+  建築・空間デザインのコンセプト立案・提案書作成・プレゼンテーション設計を行います。
+  クライアントが「完成後の自分の姿」を想像できるよう、具体的で感動的な提案を作成してください。
+  コンセプト・空間体験・費用・スケジュールの4要素を必ず含めること。
+
+delegation_description: "建築・空間デザインのコンセプト・提案書・プレゼン資料の作成"
+delegation_task_description: "建築プレゼン用提案書とコンセプトの作成"
+
+capabilities:
+  - concept_development
+  - architectural_presentation
+  - space_planning
+  - client_communication
+  - cost_planning
+  - visualization_direction
+  - bim_consultation
+  - design_storytelling

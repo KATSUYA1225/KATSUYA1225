@@ -530,3 +530,96 @@ async def dashboard_stats(company_id: str | None = None) -> dict:
 @app.get("/health")
 async def health() -> JSONResponse:
     return JSONResponse({"status": "ok", "skills_loaded": len(registry.list_skills())})
+
+
+# ── スキルフィードバック & アップグレード ───────────────────────
+
+from pydantic import BaseModel as _BM, Field as _F
+
+class FeedbackBody(_BM):
+    rating: int = _F(..., ge=1, le=5, description="1〜5の評価")
+    quality_tag: str | None = _F(None, description="great / ok / poor")
+    notes: str | None = _F(None, max_length=500, description="改善コメント")
+    task_snippet: str | None = _F(None, max_length=200, description="実行したタスクの概要")
+
+
+@app.post("/v1/skills/{role_id}/feedback", summary="スキルフィードバック送信")
+async def post_skill_feedback(role_id: str, body: FeedbackBody) -> dict:
+    from service.skill_feedback import add_feedback
+    try:
+        registry.get_skill(role_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"Skill '{role_id}' not found")
+    fid = add_feedback(
+        role_id,
+        rating=body.rating,
+        quality_tag=body.quality_tag,
+        notes=body.notes,
+        task_snippet=body.task_snippet,
+    )
+    return {"id": fid, "skill_id": role_id, "rating": body.rating, "saved": True}
+
+
+@app.get("/v1/skills/{role_id}/feedback", summary="スキルフィードバック統計")
+async def get_skill_feedback(role_id: str) -> dict:
+    from service.skill_feedback import get_summary, get_version_history
+    return {
+        "skill_id": role_id,
+        "feedback": get_summary(role_id),
+        "version_history": get_version_history(role_id),
+    }
+
+
+@app.get("/v1/skills/{role_id}/playbook", summary="スキルプレイブック取得")
+async def get_skill_playbook(role_id: str) -> dict:
+    try:
+        s = registry.get_skill(role_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"Skill '{role_id}' not found")
+    return {
+        "skill_id": role_id,
+        "version": s.skill_version,
+        "playbook": s.playbook or "（プレイブックなし）",
+    }
+
+
+@app.get("/v1/admin/feedback-overview", summary="全スキルフィードバック概要（admin）")
+async def admin_feedback_overview() -> dict:
+    from service.skill_feedback import get_all_summaries
+    return {"summaries": get_all_summaries()}
+
+
+class UpgradeBody(_BM):
+    dry_run: bool = _F(False, description="Trueの場合、Claudeを呼ばずに動作確認のみ")
+
+
+@app.post("/v1/admin/skills/{role_id}/upgrade/propose", summary="スキル改善案を生成（admin）")
+async def propose_skill_upgrade(role_id: str, body: UpgradeBody = UpgradeBody()) -> dict:
+    from service.skill_upgrader import generate_upgrade_proposal
+    try:
+        registry.get_skill(role_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"Skill '{role_id}' not found")
+    try:
+        proposal = generate_upgrade_proposal(role_id, dry_run=body.dry_run)
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return proposal
+
+
+@app.post("/v1/admin/skills/{role_id}/upgrade/apply", summary="改善案を適用してスキルを更新（admin）")
+async def apply_skill_upgrade(role_id: str, proposal: dict) -> dict:
+    from service.skill_upgrader import apply_upgrade
+    if proposal.get("skill_id") != role_id:
+        raise HTTPException(status_code=400, detail="skill_id mismatch")
+    try:
+        apply_upgrade(proposal)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    # レジストリをリロードして最新プレイブックを反映
+    registry.reload()
+    return {
+        "skill_id": role_id,
+        "upgraded_to": proposal.get("proposed_version"),
+        "applied": True,
+    }

@@ -1,0 +1,51 @@
+skill_version: "1.0"
+role_id: real_estate
+display_name: "不動産マーケ"
+display_name_en: "Real Estate Marketing"
+description: "不動産売買・賃貸・投資のマーケティング戦略・顧客獲得・収益分析を専門とするエージェント"
+is_mandatory: false
+price_tier: professional
+monthly_price_jpy: 9800
+plan_required: business
+category: industry
+preview_text: "市場分析・投資シミュレーション・デジタル集客・商談クロージングまで、不動産ビジネスの全フェーズを強力にサポート。顧客の信頼を勝ち取る提案力を提供します。"
+example_tasks:
+  - "投資物件の収益シミュレーション（利回り・LTV・キャッシュフロー）を計算してください"
+  - "不動産仲介のデジタル集客戦略を立案してください"
+  - "物件提案書の構成とポイントを教えてください"
+  - "エリアの市場分析と将来性を評価してください"
+  - "不動産購入を迷っているお客様への提案アプローチを考えてください"
+tags:
+  - real-estate
+  - property-investment
+  - real-estate-marketing
+  - market-analysis
+  - investment
+
+model: claude-sonnet-4-6
+max_tokens: 2048
+
+system_prompt_template: |
+  あなたは{company_name}の不動産マーケ専門エージェントです。
+  業界: {industry}
+  言語: {language}
+  トーン: {tone}
+  ミッション: {company_mission}
+  {company_context}
+
+  不動産売買・賃貸・投資のマーケティングと顧客対応を専門とします。
+  顧客の目的（実需/投資/事業用）を常に意識し、
+  定量的な分析と信頼を築く提案で成約率を最大化してください。
+
+delegation_description: "不動産マーケティング・投資分析・市場調査・顧客対応戦略の立案"
+delegation_task_description: "不動産ビジネスのマーケティング戦略と収益分析"
+
+capabilities:
+  - real_estate_marketing
+  - investment_analysis
+  - market_analysis
+  - property_valuation
+  - client_relationship
+  - digital_lead_generation
+  - negotiation_strategy
+  - portfolio_management

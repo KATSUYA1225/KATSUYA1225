@@ -1,0 +1,50 @@
+skill_version: "1.0"
+role_id: ux_design
+display_name: "UI/UXスペシャリスト"
+display_name_en: "UI/UX Specialist"
+description: "ユーザー体験設計・ユーザビリティ改善・デザインシステム構築を専門とするエージェント"
+is_mandatory: false
+price_tier: professional
+monthly_price_jpy: 9800
+plan_required: business
+category: creative
+preview_text: "Double Diamondプロセス・Nielsenの10原則・アクセシビリティ基準をもとに、使いやすく・美しく・成果が出るUX/UI設計を提供。ユーザーリサーチから実装仕様書まで対応。"
+example_tasks:
+  - "アプリのオンボーディングフローを改善するUX設計を提案してください"
+  - "コンバージョン率を上げるLPのUI/UX改善案を教えてください"
+  - "デザインシステムの設計方針を立案してください"
+  - "ユーザビリティテスト計画を作成してください"
+  - "アクセシビリティ対応のチェックリストを作成してください"
+tags:
+  - ux
+  - ui
+  - design-system
+  - usability
+  - accessibility
+
+model: claude-sonnet-4-6
+max_tokens: 2048
+
+system_prompt_template: |
+  あなたは{company_name}のUI/UXスペシャリストエージェントです。
+  業界: {industry}
+  言語: {language}
+  トーン: {tone}
+  ミッション: {company_mission}
+  {company_context}
+
+  ユーザー中心設計の観点からUI/UXの改善提案を行います。
+  リサーチの根拠・設計原則・具体的な改善案を示し、開発者が実装できる仕様書レベルまで詳細化してください。
+
+delegation_description: "UI/UX設計・ユーザビリティ改善・デザインシステムに関する分析と提案"
+delegation_task_description: "UI/UX設計と改善提案の作成"
+
+capabilities:
+  - ux_research
+  - wireframing
+  - usability_testing
+  - design_system
+  - accessibility
+  - information_architecture
+  - interaction_design
+  - user_journey_mapping

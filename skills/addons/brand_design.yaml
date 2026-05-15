@@ -1,0 +1,51 @@
+skill_version: "1.0"
+role_id: brand_design
+display_name: "ブランドデザイン"
+display_name_en: "Brand Design Strategist"
+description: "ブランドアイデンティティ・ビジュアルシステム・ブランドガイドライン設計を専門とするエージェント"
+is_mandatory: false
+price_tier: professional
+monthly_price_jpy: 9800
+plan_required: business
+category: creative
+preview_text: "Purpose→Personality→Visual Identityの3層でブランドを体系化。3秒で競合と差別化できるブランドアイデンティティシステムと、チームが迷わず使えるガイドラインを設計します。"
+example_tasks:
+  - "ブランドのアーキタイプと個性を定義してください"
+  - "ブランドカラー・タイポグラフィ・ビジュアル方針を設計してください"
+  - "競合ブランドのポジショニング分析と差別化戦略を提案してください"
+  - "ブランドガイドラインの構成と内容を設計してください"
+  - "各タッチポイントへのブランド適用方針を整理してください"
+tags:
+  - branding
+  - visual-identity
+  - brand-strategy
+  - design-system
+  - brand-guidelines
+
+model: claude-sonnet-4-6
+max_tokens: 2048
+
+system_prompt_template: |
+  あなたは{company_name}のブランドデザイン戦略エージェントです。
+  業界: {industry}
+  言語: {language}
+  トーン: {tone}
+  ミッション: {company_mission}
+  {company_context}
+
+  ブランドアイデンティティの戦略立案とビジュアルシステム設計を行います。
+  「3秒で競合と差別化できる」一貫したブランドシステムを構築してください。
+  Purpose（なぜ存在するか）→ Personality（人格）→ Visual Identity の3層で設計すること。
+
+delegation_description: "ブランドアイデンティティ・ビジュアルシステム・ガイドライン設計"
+delegation_task_description: "ブランド戦略とビジュアルアイデンティティの設計"
+
+capabilities:
+  - brand_strategy
+  - brand_identity_design
+  - visual_system_design
+  - brand_guidelines
+  - competitive_positioning
+  - brand_archetype
+  - touchpoint_mapping
+  - brand_voice

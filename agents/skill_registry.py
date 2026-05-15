@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .company_config import CompanyConfig
 
 SKILLS_DIR = Path(__file__).parent.parent / "skills"
+KNOWLEDGE_DIR = Path(__file__).parent.parent / "knowledge"
 
 
 @dataclass
@@ -35,6 +36,8 @@ class SkillConfig:
     preview_text: str = ""
     example_tasks: list[str] = field(default_factory=list)
     category: str = "general"
+    skill_version: str = "1.0"
+    playbook: str = ""  # knowledge/{role_id}/playbook.md から自動ロード
 
     def render_system_prompt(self, company: CompanyConfig) -> str:
         vars: dict[str, str] = defaultdict(str, {
@@ -46,12 +49,16 @@ class SkillConfig:
             "company_context": company.company_context,
             "template_context": company.template_context,
         })
-        return self.system_prompt_template.format_map(vars)
+        base = self.system_prompt_template.format_map(vars)
+        if self.playbook:
+            base += f"\n\n---\n## 専門知識ベース（v{self.skill_version}）\n\n{self.playbook}"
+        return base
 
 
 class SkillRegistry:
     def __init__(self, skills_dir: Path = SKILLS_DIR) -> None:
         self._skills: dict[str, SkillConfig] = {}
+        self._skills_dir = skills_dir
         self._load_all(skills_dir)
 
     def _load_all(self, skills_dir: Path) -> None:
@@ -59,10 +66,18 @@ class SkillRegistry:
             skill = self._load_one(yaml_path)
             self._skills[skill.role_id] = skill
 
+    def reload(self) -> None:
+        """YAMLとプレイブックを再読み込みする（スキルアップグレード後に呼ぶ）"""
+        self._skills.clear()
+        self._load_all(self._skills_dir)
+
     def _load_one(self, path: Path) -> SkillConfig:
         data: dict[str, Any] = yaml.safe_load(path.read_text(encoding="utf-8"))
+        role_id = data["role_id"]
+        playbook_path = KNOWLEDGE_DIR / role_id / "playbook.md"
+        playbook = playbook_path.read_text(encoding="utf-8") if playbook_path.exists() else ""
         return SkillConfig(
-            role_id=data["role_id"],
+            role_id=role_id,
             display_name=data["display_name"],
             display_name_en=data.get("display_name_en", data["display_name"]),
             description=data["description"],
@@ -82,6 +97,8 @@ class SkillRegistry:
             preview_text=data.get("preview_text", ""),
             example_tasks=data.get("example_tasks", []),
             category=data.get("category", "general"),
+            skill_version=data.get("skill_version", "1.0"),
+            playbook=playbook,
         )
 
     def get_skill(self, role_id: str) -> SkillConfig:
