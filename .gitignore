@@ -11,7 +11,9 @@ venv/
 env/
 
 # データ・ログ
-data/usage.db
+data/*.db
+data/*.db-shm
+data/*.db-wal
 data/dna/
 logs/
 

@@ -247,6 +247,12 @@ async def skill_page() -> HTMLResponse:
     return HTMLResponse(content=html)
 
 
+@app.get("/admin", response_class=HTMLResponse, include_in_schema=False)
+async def admin_ui() -> HTMLResponse:
+    html = (Path(__file__).parent.parent / "static" / "admin.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html)
+
+
 @app.get("/v1/skills/{role_id}", summary="スキル詳細")
 async def get_skill_detail(role_id: str) -> dict:
     from fastapi import HTTPException
