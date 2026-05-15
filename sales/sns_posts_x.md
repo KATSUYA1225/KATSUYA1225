@@ -24,7 +24,7 @@ AI社長が全部やるSaaSを作った。
 月¥29,800で23名の専門AIチームが稼働。
 
 先着30社限定で先行登録受付中↓
-https://your-domain.com/register
+https://ai-kigyo-os.onrender.com/register
 ```
 
 ---
@@ -67,7 +67,7 @@ https://your-domain.com/register
 「月3万で経営チームが動く」を
 一番最初に体験する30社になるか否か。
 
-https://your-domain.com/register
+https://ai-kigyo-os.onrender.com/register
 ```
 
 ---
@@ -146,7 +146,7 @@ ROI計算：
 コンサル費用節約だけで元が取れる。
 
 先行登録↓
-https://your-domain.com/register
+https://ai-kigyo-os.onrender.com/register
 ```
 
 ---
@@ -203,7 +203,7 @@ AI企業OSは今、先行登録フェーズ。
 でも一緒に作る仲間を探してる。
 
 残り18枠。
-https://your-domain.com/register
+https://ai-kigyo-os.onrender.com/register
 ```
 
 ---
@@ -228,7 +228,7 @@ AIチームは普通に戦力になる。
 業種は関係ない。
 「経営の頭脳」が必要な全ての人に。
 
-https://your-domain.com/register
+https://ai-kigyo-os.onrender.com/register
 ```
 
 ---
@@ -251,7 +251,7 @@ https://your-domain.com/register
 登録は30秒・無料・カード不要。
 
 ↓ ここから
-https://your-domain.com/register
+https://ai-kigyo-os.onrender.com/register
 
 #AI経営 #スタートアップ #中小企業経営
 ```
@@ -275,5 +275,5 @@ https://your-domain.com/register
 - **ビジネス系**：#副業 #フリーランス #経営者
 
 ### URL設定（必須）
-全投稿の `https://your-domain.com/register` を
+全投稿の `https://ai-kigyo-os.onrender.com/register` を
 実際のデプロイURL（例：Renderドメイン）に置き換えてから投稿する。

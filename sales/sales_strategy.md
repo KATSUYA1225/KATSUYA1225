@@ -98,7 +98,7 @@ BGM：テンポが上がる
 [55-60秒]
 ロゴ + URL
 「AI企業OS — 先着30社 先行登録受付中」
-「月¥29,800 — your-domain.com/register」
+「月¥29,800 — ai-kigyo-os.onrender.com/register」
 ```
 
 ---
@@ -114,7 +114,7 @@ BGM：テンポが上がる
 
 2. **デプロイURLの確認**
    - Renderまたはrailwayのデプロイ先URLを確認
-   - `sns_posts_x.md` の `https://your-domain.com/register` を実URLに置き換え
+   - `sns_posts_x.md` の `https://ai-kigyo-os.onrender.com/register` を実URLに置き換え
 
 3. **Xプロフィール更新**
    - プロフィール文にAI企業OSへの言及を追加
