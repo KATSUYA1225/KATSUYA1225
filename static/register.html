@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI社長があなたの会社を動かす。先行登録で最大50%オフ。AI企業OS — Future Share Collective">
+<title>先行登録 | AI企業OS — 会社にAI経営チームを。</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#030a14;color:#e8f0ff;font-family:'Noto Sans JP',sans-serif;overflow-x:hidden}
+
+:root{
+  --c1:#00d4ff;--c2:#7c3aed;--c3:#e879f9;--c4:#f59e0b;
+  --bg:#030a14;--bg2:rgba(6,12,28,.9);
+  --t1:#f0f4ff;--t2:#8899bb;--t3:#445577;
+  --bdr:rgba(255,255,255,.07);--bdr-c:rgba(0,212,255,.3);
+}
+
+/* ── PV Hero Canvas ── */
+#pv-hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,#030a14 0%,#060c1c 100%)}
+#pv-canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* ── Countdown Banner ── */
+#countdown-bar{background:linear-gradient(90deg,var(--c2),var(--c1));padding:10px 20px;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.04em;position:relative;z-index:10}
+#countdown-bar span{color:#fff;opacity:.85}
+#countdown-bar strong{color:#fff}
+
+/* ── Nav ── */
+#nav{position:fixed;top:34px;left:0;right:0;z-index:100;padding:14px 32px;transition:background .3s,top .3s}
+#nav.shifted{top:0}
+#nav.on{background:rgba(3,10,20,.85);backdrop-filter:blur(22px);border-bottom:1px solid var(--bdr)}
+.nav-in{max-width:1040px;margin:0 auto;display:flex;align-items:center}
+.nlogo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--t1);text-decoration:none;display:flex;align-items:center;gap:10px}
+.nhex{width:28px;height:28px;background:linear-gradient(135deg,var(--c1),var(--c2));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff}
+.nact{margin-left:auto}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 26px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;text-decoration:none;cursor:pointer;border:none;transition:all .22s;white-space:nowrap}
+.btn-lg{padding:16px 36px;font-size:1rem;border-radius:10px}
+.btn-p{background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;box-shadow:0 0 28px rgba(0,212,255,.25)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 0 44px rgba(0,212,255,.45)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--bdr)}
+.btn-g:hover{color:var(--t1);border-color:rgba(255,255,255,.2)}
+
+/* ── Hero content ── */
+.hero-body{position:relative;z-index:2;text-align:center;padding:0 20px;max-width:760px;margin:0 auto}
+.early-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:100px;padding:6px 18px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--c4);margin-bottom:28px;letter-spacing:.04em}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--c4);box-shadow:0 0 10px var(--c4);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.65)}}
+
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.4rem,6.5vw,5rem);font-weight:800;line-height:1.06;letter-spacing:-.03em;margin-bottom:22px}
+.hero-title .l1{display:block;color:var(--t1)}
+.hero-title .grd{background:linear-gradient(135deg,var(--c1) 0%,var(--c2) 50%,var(--c3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.hero-sub{color:var(--t2);font-size:1.05rem;line-height:1.88;margin-bottom:16px}
+.hero-price-note{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.18);border-radius:6px;padding:8px 16px;font-size:.82rem;color:var(--c1);margin-bottom:40px;font-family:'JetBrains Mono',monospace}
+
+/* ── Register Form ── */
+#reg-form{background:rgba(6,14,32,.9);border:1px solid var(--bdr-c);border-radius:16px;padding:40px 36px;max-width:500px;margin:0 auto;box-shadow:0 0 60px rgba(0,212,255,.08);position:relative;z-index:2}
+#reg-form h2{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;color:var(--t1);margin-bottom:8px;text-align:center}
+#reg-form .form-note{font-size:.78rem;color:var(--t3);text-align:center;margin-bottom:28px;font-family:'JetBrains Mono',monospace}
+.form-row{margin-bottom:16px}
+.form-row label{display:block;font-size:.78rem;color:var(--t2);margin-bottom:6px;letter-spacing:.04em}
+.form-row input,.form-row select{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);border-radius:7px;color:var(--t1);font-family:'Noto Sans JP',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+.form-row input:focus,.form-row select:focus{border-color:var(--c1)}
+.form-row select option{background:#0a1628;color:var(--t1)}
+.form-submit{width:100%;padding:15px;background:linear-gradient(135deg,var(--c1),var(--c2));border:none;border-radius:9px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .22s;box-shadow:0 0 28px rgba(0,212,255,.2)}
+.form-submit:hover{transform:translateY(-2px);box-shadow:0 0 44px rgba(0,212,255,.4)}
+.form-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.benefit-list{list-style:none;margin-bottom:24px}
+.benefit-list li{font-size:.82rem;color:var(--t2);padding:6px 0;display:flex;align-items:flex-start;gap:8px;border-bottom:1px solid var(--bdr)}
+.benefit-list li:last-child{border-bottom:none}
+.benefit-list li::before{content:'✓';color:var(--c1);font-weight:700;flex-shrink:0;margin-top:1px}
+.form-success{display:none;text-align:center;padding:20px 0}
+.form-success .big-check{font-size:3rem;margin-bottom:14px}
+.form-success h3{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--t1);margin-bottom:8px}
+.form-success p{font-size:.88rem;color:var(--t2);line-height:1.7}
+
+/* ── Stats ── */
+.stats-row{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-top:56px;position:relative;z-index:2}
+.stat{text-align:center}
+.stat-n{font-family:'Space Grotesk',sans-serif;font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.stat-l{font-size:.68rem;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.stat-div{width:1px;height:36px;background:var(--bdr);align-self:center}
+
+/* ── Sections ── */
+.sec{padding:96px 0;position:relative}
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--c1);letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;color:var(--t1);margin-bottom:14px}
+.sec-sub{color:var(--t2);font-size:.96rem;line-height:1.8;max-width:480px}
+
+/* ── Pain Section ── */
+#pain{background:rgba(4,8,20,.95);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr)}
+.pain-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:44px}
+.pain-card{background:rgba(8,15,32,.8);border:1px solid var(--bdr);border-radius:12px;padding:28px 24px;position:relative;overflow:hidden}
+.pain-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--c2),transparent)}
+.pain-num{font-family:'Space Grotesk',sans-serif;font-size:.72rem;color:var(--c3);letter-spacing:.14em;margin-bottom:10px;font-weight:700}
+.pain-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--t1);margin-bottom:8px}
+.pain-desc{font-size:.84rem;color:var(--t2);line-height:1.75}
+@media(max-width:640px){.pain-grid{grid-template-columns:1fr}}
+
+/* ── Product Demo ── */
+#demo{background:var(--bg)}
+.demo-terminal{background:#010810;border:1px solid var(--bdr-c);border-radius:12px;overflow:hidden;max-width:720px;margin:44px auto 0;box-shadow:0 0 60px rgba(0,212,255,.08)}
+.terminal-bar{background:rgba(0,212,255,.06);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bdr)}
+.t-dot{width:10px;height:10px;border-radius:50%}
+.t-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--t3);margin-left:8px}
+.terminal-body{padding:24px 20px;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:2}
+.t-line{display:flex;gap:10px;margin-bottom:4px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+.t-line.vis{opacity:1;transform:none}
+.t-prompt{color:var(--c2);flex-shrink:0}
+.t-user{color:var(--t1)}
+.t-agent{color:var(--c1)}
+.t-ok{color:#10b981}
+.t-dim{color:var(--t3)}
+.typing-cursor{display:inline-block;width:8px;height:14px;background:var(--c1);margin-left:2px;animation:blink .9s infinite}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* ── Pricing CTA ── */
+#pricing-cta{background:linear-gradient(180deg,rgba(4,8,20,.95) 0%,#030a14 100%)}
+.price-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.pc{background:rgba(8,14,28,.8);border:1px solid var(--bdr);border-radius:14px;padding:28px 22px;position:relative;transition:all .3s}
+.pc.featured{border-color:rgba(0,212,255,.4);box-shadow:0 0 40px rgba(0,212,255,.09)}
+.pc-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;font-size:.68rem;font-weight:700;padding:3px 14px;border-radius:100px;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
+.pc-name{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--t3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.pc-price{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:800;color:var(--t1);line-height:1;margin-bottom:4px}
+.pc-price.grd{background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pc-price span{font-size:.88rem;font-weight:400;color:var(--t2);-webkit-text-fill-color:var(--t2)}
+.pc-sub{font-size:.72rem;color:var(--t3);margin-bottom:18px;font-family:'JetBrains Mono',monospace}
+.pc-list{list-style:none;margin-bottom:22px}
+.pc-list li{font-size:.8rem;color:var(--t2);padding:5px 0;border-bottom:1px solid var(--bdr);display:flex;gap:7px;align-items:flex-start}
+.pc-list li::before{content:'✓';color:var(--c1);flex-shrink:0;font-weight:700}
+.early-tag{display:inline-block;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--c4);font-size:.65rem;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;margin-bottom:14px}
+@media(max-width:760px){.price-cards{grid-template-columns:1fr}}
+
+/* ── Why First ── */
+#why{background:rgba(6,12,24,.96)}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px}
+.why-card{padding:28px 22px;border:1px solid var(--bdr);border-radius:12px;background:rgba(8,15,32,.7);transition:border-color .3s,transform .3s}
+.why-card:hover{border-color:var(--bdr-c);transform:translateY(-4px)}
+.why-icon{font-size:2rem;margin-bottom:14px;display:block;filter:drop-shadow(0 0 8px rgba(0,212,255,.3))}
+.why-title{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:700;color:var(--t1);margin-bottom:8px}
+.why-desc{font-size:.83rem;color:var(--t2);line-height:1.78}
+@media(max-width:640px){.why-grid{grid-template-columns:1fr}}
+
+/* ── Final CTA ── */
+#final-cta{text-align:center;padding:120px 28px;position:relative;overflow:hidden;border-top:1px solid var(--bdr)}
+#final-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(0,212,255,.05) 0%,transparent 70%)}
+.cta-aur{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.cta-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin-bottom:18px;position:relative;z-index:1}
+.cta-sub{color:var(--t2);font-size:1rem;margin-bottom:44px;line-height:1.8;position:relative;z-index:1}
+
+/* ── Reveal ── */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+@media(max-width:600px){.stats-row{gap:22px}.stat-div{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ── Countdown Banner ── -->
+<div id="countdown-bar">
+  <strong>早期登録キャンペーン</strong>
+  <span> — 正式ローンチまで </span>
+  <strong id="cd-timer">読み込み中...</strong>
+  <span> — 先着30社限定で </span>
+  <strong>初月50%オフ</strong>
+</div>
+
+<!-- ── Nav ── -->
+<nav id="nav" class="shifted">
+  <div class="nav-in">
+    <a href="/" class="nlogo">
+      <div class="nhex">AI</div>
+      AI企業OS
+    </a>
+    <div class="nact">
+      <a href="#reg-section" class="btn btn-p">先行登録する</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── PV Hero ── -->
+<section id="pv-hero">
+  <canvas id="pv-canvas"></canvas>
+
+  <div class="hero-body">
+    <div class="early-badge rv">
+      <span class="badge-dot"></span>
+      EARLY ACCESS · 先着30社限定
+    </div>
+
+    <h1 class="hero-title rv d1">
+      <span class="l1">会社にAI経営チームを</span>
+      <span class="grd">まるごとサブスクで。</span>
+    </h1>
+
+    <p class="hero-sub rv d2">
+      AI社長が24時間、戦略・営業・財務・マーケを指揮する。<br>
+      採用コストゼロ。月¥29,800から。
+    </p>
+
+    <div class="hero-price-note rv d2">
+      ⚡ 先行登録で初月 <strong style="color:var(--c4);margin:0 4px">50%オフ</strong> — 残り <span id="slots-left" style="color:var(--c4);font-weight:700">23</span> 枠
+    </div>
+
+    <div class="rv d3">
+      <a href="#reg-section" class="btn btn-p btn-lg">今すぐ先行登録 — 無料</a>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat rv"><div class="stat-n">23</div><div class="stat-l">専門エージェント</div></div>
+    <div class="stat-div rv"></div>
+    <div class="stat rv d1"><div class="stat-n">24h</div><div class="stat-l">ノンストップ稼働</div></div>
+    <div class="stat-div rv d1"></div>
+    <div class="stat rv d2"><div class="stat-n">1/100</div><div class="stat-l">役員コスト比</div></div>
+  </div>
+</section>
+
+<!-- ── Pain Section ── -->
+<section id="pain" class="sec">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:8px">
+      <div class="sec-label rv">THE PROBLEM</div>
+      <h2 class="sec-title rv d1">「全部自分でやる」の限界</h2>
+      <p class="sec-sub rv d2" style="margin:0 auto;text-align:center">スタートアップ・中小企業の社長が直面する、4つの壁。</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card rv">
+        <div class="pain-num">PAIN 01</div>
+        <div class="pain-title">経営コンサルは高すぎる</div>
+        <div class="pain-desc">戦略コンサル ¥50万〜/月。優秀な幹部の採用は難しく、雇っても月100万円以上のコストがかかる。</div>
+      </div>
+      <div class="pain-card rv d1">
+        <div class="pain-num">PAIN 02</div>
+        <div class="pain-title">意思決定が遅くなる</div>
+        <div class="pain-desc">情報収集→分析→実行まで数週間。競合がAIで動く中、ヒトの速度では追いつけない。</div>
+      </div>
+      <div class="pain-card rv d2">
+        <div class="pain-num">PAIN 03</div>
+        <div class="pain-title">全領域の専門家は雇えない</div>
+        <div class="pain-desc">財務・法務・HR・マーケ・営業——すべての分野を1人でカバーするのは不可能。穴が増えていく。</div>
+      </div>
+      <div class="pain-card rv d3">
+        <div class="pain-num">PAIN 04</div>
+        <div class="pain-title">優秀なAIツールがバラバラ</div>
+        <div class="pain-desc">ChatGPT・Notion AI・各種ツールを別々に使っても連携しない。「会社として動く」AIチームが存在しなかった。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PV Video Section ── -->
+<section id="pv-section" class="sec" style="background:rgba(2,6,16,.97);border-top:1px solid var(--bdr);padding:80px 0">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:36px">
+      <div class="sec-label rv">PROMO VIDEO</div>
+      <h2 class="sec-title rv d1">30秒でわかるAI企業OS</h2>
+    </div>
+    <div class="rv d1" style="max-width:800px;margin:0 auto;border-radius:14px;overflow:hidden;border:1px solid var(--bdr-c);box-shadow:0 0 60px rgba(0,212,255,.12)">
+      <video controls autoplay muted loop playsinline
+             style="width:100%;display:block;background:#000"
+             poster="">
+        <source src="/static/pv.mp4" type="video/mp4">
+      </video>
+    </div>
+    <p class="rv d2" style="text-align:center;margin-top:20px;font-size:.82rem;color:var(--t3);font-family:'JetBrains Mono',monospace">
+      960×540 · 30sec · AI企業OS PV v1.0
+    </p>
+  </div>
+</section>
+
+<!-- ── Demo Terminal ── -->
+<section id="demo" class="sec">
+  <div class="wrap">
+    <div style="text-align:center">
+      <div class="sec-label rv">LIVE DEMO</div>
+      <h2 class="sec-title rv d1">「新規事業を立案して」——</h2>
+      <p class="sec-sub rv d2" style="margin:0 auto;text-align:center">一言指示するだけで、6つの専門AIが並列実行する。</p>
+    </div>
+    <div class="demo-terminal rv d1">
+      <div class="terminal-bar">
+        <div class="t-dot" style="background:#ff5f57"></div>
+        <div class="t-dot" style="background:#ffbd2e"></div>
+        <div class="t-dot" style="background:#28c840"></div>
+        <span class="t-label">AI企業OS — Terminal</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <div class="t-line" id="tl0"><span class="t-prompt">CEO &gt;</span><span class="t-user">&nbsp;新規事業を立案して。ターゲットは30代の個人事業主。</span></div>
+        <div class="t-line" id="tl1"><span class="t-agent">👑 AI社長</span><span class="t-dim">&nbsp;→ 6部門に指示を分配中...</span></div>
+        <div class="t-line" id="tl2"><span style="color:var(--c2)">📊 マーケ</span><span class="t-dim">&nbsp;→ 市場調査・ペルソナ分析 実行中</span></div>
+        <div class="t-line" id="tl3"><span style="color:var(--c2)">💼 営業</span><span class="t-dim">&nbsp;→ 競合分析・セールスシナリオ 実行中</span></div>
+        <div class="t-line" id="tl4"><span style="color:var(--c2)">💰 財務</span><span class="t-dim">&nbsp;→ 収益モデル・ROIシミュレーション 実行中</span></div>
+        <div class="t-line" id="tl5"><span style="color:var(--c2)">🎯 戦略</span><span class="t-dim">&nbsp;→ GTM戦略・差別化ポイント 実行中</span></div>
+        <div class="t-line" id="tl6"><span class="t-ok">✓ 完了</span><span class="t-dim">&nbsp;— 処理時間 <strong style="color:var(--t1)">38秒</strong></span></div>
+        <div class="t-line" id="tl7"><span class="t-agent">👑 AI社長</span><span class="t-user">&nbsp;→ 統合レポートを生成しました。即実行可能な事業計画書が準備できています。</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Register Form Section ── -->
+<section id="reg-section" class="sec" style="background:rgba(4,10,24,.97);border-top:1px solid var(--bdr)">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:44px">
+      <div class="sec-label rv">EARLY ACCESS</div>
+      <h2 class="sec-title rv d1">先行登録 — 無料・30秒で完了</h2>
+      <p class="sec-sub rv d2" style="margin:0 auto;text-align:center">正式ローンチ時に優先案内 + 初月50%オフ特典をお届けします。</p>
+    </div>
+
+    <div id="reg-form" class="rv d1">
+      <h2>先行登録フォーム</h2>
+      <p class="form-note">✦ 先着30社限定 ✦ クレジットカード不要</p>
+
+      <ul class="benefit-list">
+        <li>正式ローンチ時に最優先でご案内</li>
+        <li>初月利用料 <strong style="color:var(--c4)">50%オフ</strong>（最大 ¥14,900 割引）</li>
+        <li>セットアップ完全サポート（無料）</li>
+        <li>フィードバックが製品に反映される</li>
+      </ul>
+
+      <form id="signup-form">
+        <div class="form-row">
+          <label>お名前</label>
+          <input type="text" name="name" placeholder="山田 太郎" required>
+        </div>
+        <div class="form-row">
+          <label>メールアドレス</label>
+          <input type="email" name="email" placeholder="example@company.com" required>
+        </div>
+        <div class="form-row">
+          <label>会社名・屋号（任意）</label>
+          <input type="text" name="company" placeholder="株式会社〇〇 / フリーランス可">
+        </div>
+        <div class="form-row">
+          <label>業種</label>
+          <select name="industry">
+            <option value="">選択してください</option>
+            <option>IT・SaaS・スタートアップ</option>
+            <option>EC・通販・小売</option>
+            <option>コンサルティング</option>
+            <option>クリエイター・デザイン</option>
+            <option>飲食・サービス</option>
+            <option>不動産・建築</option>
+            <option>医療・介護・福祉</option>
+            <option>製造・職人</option>
+            <option>教育・コーチング</option>
+            <option>その他</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>気になるプラン</label>
+          <select name="plan">
+            <option value="">選択してください</option>
+            <option>Starter — ¥9,800/月（個人事業主・副業）</option>
+            <option>Growth — ¥29,800/月（スタートアップ・中小）</option>
+            <option>Business — ¥59,800/月（成長期企業）</option>
+            <option>Enterprise — 要相談</option>
+          </select>
+        </div>
+        <button type="submit" class="form-submit" id="submit-btn">
+          先行登録する（無料）→
+        </button>
+      </form>
+
+      <div class="form-success" id="form-success">
+        <div class="big-check">🎉</div>
+        <h3>登録完了！ありがとうございます</h3>
+        <p>正式ローンチ時に <strong style="color:var(--c1)">初月50%オフ</strong> の優先案内をお送りします。<br>もう少しお待ちください。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing Preview ── -->
+<section id="pricing-cta" class="sec">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:12px">
+      <div class="sec-label rv">PRICING</div>
+      <h2 class="sec-title rv d1">シンプルな料金体系</h2>
+      <p class="sec-sub rv d2" style="margin:0 auto;text-align:center">先行登録者は全プランで初月50%オフ。</p>
+    </div>
+    <div class="price-cards">
+      <div class="pc rv">
+        <div class="pc-name">Starter</div>
+        <div class="pc-price">¥9,800<span>/月</span></div>
+        <div class="pc-sub">先行登録者 → ¥4,900</div>
+        <ul class="pc-list">
+          <li>AI社長エージェント</li>
+          <li>基本6部門スキル</li>
+          <li>月30タスク</li>
+          <li>企業DNA学習</li>
+        </ul>
+        <a href="#reg-section" class="btn btn-g" style="width:100%;justify-content:center">登録する</a>
+      </div>
+      <div class="pc featured rv d1">
+        <div class="pc-badge">人気 No.1 · 月100万円の最短ルート</div>
+        <div class="early-tag">先行登録者: 初月 ¥14,900</div>
+        <div class="pc-name">Growth</div>
+        <div class="pc-price grd">¥29,800<span>/月</span></div>
+        <div class="pc-sub">34社契約で月100万円</div>
+        <ul class="pc-list">
+          <li>Starterの全機能</li>
+          <li>専門スキル5つ選択</li>
+          <li>月200タスク</li>
+          <li>デジタルビジュアル含む</li>
+          <li>優先レスポンス</li>
+        </ul>
+        <a href="#reg-section" class="btn btn-p" style="width:100%;justify-content:center">先行登録する</a>
+      </div>
+      <div class="pc rv d2">
+        <div class="pc-name">Business</div>
+        <div class="pc-price">¥59,800<span>/月</span></div>
+        <div class="pc-sub">先行登録者 → ¥29,900</div>
+        <ul class="pc-list">
+          <li>全スキル無制限</li>
+          <li>タスク無制限</li>
+          <li>チーム5名まで</li>
+          <li>専任サポート</li>
+        </ul>
+        <a href="#reg-section" class="btn btn-g" style="width:100%;justify-content:center">登録する</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Why AI企業OS ── -->
+<section id="why" class="sec">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:8px">
+      <div class="sec-label rv">WHY US</div>
+      <h2 class="sec-title rv d1">なぜ今、AI企業OSか</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card rv">
+        <span class="why-icon">⚡</span>
+        <div class="why-title">即日稼働・採用コストゼロ</div>
+        <div class="why-desc">登録完了の翌秒から23のAIエージェントが稼働開始。採用・研修・教育コストは一切かからない。</div>
+      </div>
+      <div class="why-card rv d1">
+        <span class="why-icon">🧠</span>
+        <div class="why-title">企業DNAを学習して動く</div>
+        <div class="why-desc">業種・ミッション・カルチャーを学習した専用AIチーム。汎用ツールとは次元が違う精度で動く。</div>
+      </div>
+      <div class="why-card rv d2">
+        <span class="why-icon">🔄</span>
+        <div class="why-title">社長1人でも組織として動く</div>
+        <div class="why-desc">一言の指示で6部門が並列実行。あなたはCEOとして大きな方向性だけを決めればいい。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Final CTA ── -->
+<section id="final-cta">
+  <div class="cta-aur" style="width:400px;height:400px;background:rgba(0,212,255,.05);top:-80px;left:30%"></div>
+  <div class="cta-aur" style="width:300px;height:300px;background:rgba(124,58,237,.06);bottom:-60px;right:25%"></div>
+  <div class="wrap" style="position:relative;z-index:1">
+    <h2 class="cta-title rv">
+      先着30社だけが手にする、<br>
+      <span style="background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AI経営の最前線。</span>
+    </h2>
+    <p class="cta-sub rv d1">正式ローンチ前に登録した企業だけが、初月50%オフで始められます。<br>登録は30秒・無料・クレジットカード不要。</p>
+    <div class="rv d2">
+      <a href="#reg-section" class="btn btn-p btn-lg">今すぐ先行登録する — 無料 →</a>
+    </div>
+  </div>
+</section>
+
+<footer style="background:rgba(1,3,8,.98);border-top:1px solid var(--bdr);padding:32px 28px;text-align:center">
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--t3)">© 2026 AI企業OS · Future Share Collective · <a href="/" style="color:var(--t3);text-decoration:none">トップページ</a> · <a href="mailto:gp.k122517@gmail.com" style="color:var(--t3);text-decoration:none">お問い合わせ</a></p>
+</footer>
+
+<script>
+/* ── Countdown Timer ── */
+(function(){
+  const launch = new Date('2026-06-01T00:00:00+09:00');
+  function update(){
+    const now = new Date();
+    const diff = launch - now;
+    if(diff <= 0){ document.getElementById('cd-timer').textContent = 'ローンチ！'; return; }
+    const d = Math.floor(diff/86400000);
+    const h = Math.floor((diff%86400000)/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    document.getElementById('cd-timer').textContent = `${d}日 ${h}時間 ${m}分 ${s}秒`;
+  }
+  update(); setInterval(update, 1000);
+})();
+
+/* ── Nav scroll ── */
+const nav = document.getElementById('nav');
+const bar = document.getElementById('countdown-bar');
+window.addEventListener('scroll', () => {
+  const barH = bar.offsetHeight;
+  nav.style.top = scrollY > barH ? '0' : (barH - scrollY) + 'px';
+  nav.classList.toggle('on', scrollY > 50);
+}, {passive:true});
+
+/* ── PV Canvas Animation ── */
+(function(){
+  const canvas = document.getElementById('pv-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, nodes = [], frame = 0;
+  const mouse = {x:-999, y:-999};
+
+  class Node {
+    constructor(){
+      this.reset(true);
+    }
+    reset(init){
+      this.x = Math.random() * W;
+      this.y = init ? Math.random() * H : H + 20;
+      this.vx = (Math.random() - .5) * .5;
+      this.vy = (Math.random() - .5) * .5;
+      this.hub = Math.random() < .08;
+      this.r = this.hub ? 2.8 : 1.2 + Math.random() * 1.2;
+      this.ms = this.hub ? .3 : .7;
+      const t = Math.random();
+      this.col = t < .5 ? '#00d4ff' : t < .78 ? '#7c3aed' : '#e879f9';
+      this.a = .3 + Math.random() * .6;
+      this.ph = Math.random() * Math.PI * 2;
+    }
+    upd(){
+      const dx = this.x - mouse.x, dy = this.y - mouse.y, d2 = dx*dx + dy*dy;
+      if(d2 < 200*200 && d2 > 0){ const d=Math.sqrt(d2), f=(200-d)/200*.35; this.vx+=dx/d*f; this.vy+=dy/d*f; }
+      const sp = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+      if(sp > this.ms){ this.vx = this.vx/sp*this.ms; this.vy = this.vy/sp*this.ms; }
+      this.vx *= .993; this.vy *= .993;
+      this.x += this.vx; this.y += this.vy;
+      if(this.x<0)this.x=W; if(this.x>W)this.x=0;
+      if(this.y<0)this.y=H; if(this.y>H)this.y=0;
+      this.ph += .02;
+    }
+    draw(){
+      const pulse = this.hub ? 1 + .2*Math.sin(this.ph) : 1;
+      const r = this.r * pulse;
+      if(this.hub){
+        const g = ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,r*5);
+        g.addColorStop(0, this.col); g.addColorStop(1,'transparent');
+        ctx.save(); ctx.globalAlpha = this.a * .5;
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(this.x,this.y,r*5,0,Math.PI*2); ctx.fill(); ctx.restore();
+      }
+      ctx.save(); ctx.globalAlpha = this.a;
+      ctx.fillStyle = this.col; ctx.beginPath(); ctx.arc(this.x,this.y,r,0,Math.PI*2); ctx.fill(); ctx.restore();
+    }
+  }
+
+  function resize(){ W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  function init(){
+    resize();
+    const n = Math.min(Math.floor(W*H/6800), 180);
+    nodes = Array.from({length:n}, () => new Node());
+  }
+  function drawEdges(){
+    const MD = 120, MD2 = MD*MD;
+    ctx.lineWidth = .4;
+    for(let i=0; i<nodes.length; i++){
+      for(let j=i+1; j<nodes.length; j++){
+        const a=nodes[i], b=nodes[j];
+        const dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy;
+        if(d2 < MD2){
+          const op = (1-Math.sqrt(d2)/MD) * (a.hub||b.hub ? .5 : .22);
+          ctx.save(); ctx.globalAlpha = op;
+          ctx.strokeStyle = a.hub||b.hub ? '#00d4ff' : 'rgba(100,140,220,.8)';
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.restore();
+        }
+      }
+    }
+  }
+
+  /* Orbital rings around hero center */
+  function drawOrbitals(){
+    const cx = W/2, cy = H*.42;
+    ctx.save(); ctx.globalAlpha = .04;
+    [180, 280, 380].forEach((r,i) => {
+      ctx.strokeStyle = i===0 ? '#00d4ff' : i===1 ? '#7c3aed' : '#e879f9';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    });
+    ctx.restore();
+
+    /* Orbiting dots */
+    const t = frame / 180;
+    const orbs = [
+      {r:180, speed:1, col:'#00d4ff', size:4},
+      {r:280, speed:-.65, col:'#7c3aed', size:3},
+      {r:380, speed:.45, col:'#e879f9', size:3.5},
+    ];
+    orbs.forEach(o => {
+      const angle = t * o.speed;
+      const x = cx + Math.cos(angle) * o.r;
+      const y = cy + Math.sin(angle) * o.r * .35;
+      const g = ctx.createRadialGradient(x,y,0,x,y,o.size*3);
+      g.addColorStop(0, o.col); g.addColorStop(1,'transparent');
+      ctx.save(); ctx.globalAlpha = .7;
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x,y,o.size*3,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = o.col; ctx.beginPath(); ctx.arc(x,y,o.size,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    drawEdges();
+    drawOrbitals();
+    nodes.forEach(n => { n.upd(); n.draw(); });
+    frame++;
+    requestAnimationFrame(loop);
+  }
+
+  document.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; }, {passive:true});
+  window.addEventListener('resize', init, {passive:true});
+  init(); loop();
+})();
+
+/* ── Terminal Animation ── */
+(function(){
+  const lines = document.querySelectorAll('.t-line');
+  let i = 0;
+  function showNext(){
+    if(i >= lines.length) return;
+    lines[i].classList.add('vis');
+    i++;
+    setTimeout(showNext, 600 + Math.random()*400);
+  }
+  const obs = new IntersectionObserver(es => {
+    if(es[0].isIntersecting){ setTimeout(showNext, 400); obs.disconnect(); }
+  }, {threshold:.3});
+  const term = document.getElementById('terminal-body');
+  if(term) obs.observe(term);
+})();
+
+/* ── Scroll Reveal ── */
+const rvo = new IntersectionObserver(es => {
+  es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); rvo.unobserve(e.target); } });
+}, {threshold:.07, rootMargin:'0px 0px -28px 0px'});
+document.querySelectorAll('.rv').forEach(el => rvo.observe(el));
+
+/* ── Form Submit ── */
+document.getElementById('signup-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+
+  const data = new FormData(this);
+  const body = {
+    name: data.get('name'),
+    email: data.get('email'),
+    company: data.get('company'),
+    industry: data.get('industry'),
+    plan: data.get('plan'),
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    /* Formspree エンドポイント（後で設定） */
+    const res = await fetch('https://formspree.io/f/xeoqkqzn', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Accept':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if(res.ok){
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('form-success').style.display = 'block';
+      /* 残り枠を減らす（デモ） */
+      const slots = document.getElementById('slots-left');
+      if(slots) slots.textContent = Math.max(0, parseInt(slots.textContent) - 1);
+    } else {
+      throw new Error('送信エラー');
+    }
+  } catch(err) {
+    /* フォールバック：メール送信 */
+    const subject = encodeURIComponent('【AI企業OS】先行登録申込');
+    const bodyText = encodeURIComponent(`お名前: ${body.name}\nメール: ${body.email}\n会社名: ${body.company}\n業種: ${body.industry}\nプラン: ${body.plan}`);
+    window.location.href = `mailto:gp.k122517@gmail.com?subject=${subject}&body=${bodyText}`;
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }
+});
+
+/* ── Slots countdown (simulate) ── */
+(function(){
+  const slots = document.getElementById('slots-left');
+  if(!slots) return;
+  let count = 23;
+  setTimeout(() => {
+    const t = setInterval(() => {
+      if(count <= 18){ clearInterval(t); return; }
+      count--;
+      slots.textContent = count;
+    }, 8000 + Math.random()*12000);
+  }, 3000);
+})();
+</script>
+</body>
+</html>

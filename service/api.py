@@ -11,7 +11,7 @@ from typing import Any
 import anthropic
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Header
-from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 
 from agents import CompanyConfig, PresidentAgent, SkillRegistry
 from service.models import (
@@ -231,8 +231,25 @@ async def get_usage(company_id: str, month: str | None = None) -> UsageResponse:
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def landing() -> HTMLResponse:
+    html = (Path(__file__).parent.parent / "static" / "landing2.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html)
+
+
+@app.get("/lp", response_class=HTMLResponse, include_in_schema=False)
+async def landing_v1() -> HTMLResponse:
     html = (Path(__file__).parent.parent / "static" / "landing.html").read_text(encoding="utf-8")
     return HTMLResponse(content=html)
+
+
+@app.get("/register", response_class=HTMLResponse, include_in_schema=False)
+async def register_page() -> HTMLResponse:
+    html = (Path(__file__).parent.parent / "static" / "register.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html)
+
+
+@app.get("/early", response_class=RedirectResponse, include_in_schema=False)
+async def early_redirect() -> RedirectResponse:
+    return RedirectResponse(url="/register", status_code=302)
 
 
 @app.get("/app", response_class=HTMLResponse, include_in_schema=False)
